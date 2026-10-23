@@ -21,9 +21,8 @@ public class CameraSystem
 
     public void FirstPersonFollowRotate(PlayerInput input, Transform target, float dt)
     {
-        // Mouse axes are already per-frame deltas, so don't multiply by dt.
         yaw += input.mouseDx * camera.sensitivity;
-        pitch -= input.mouseDy * camera.sensitivity;   // minus: mouse up = look up
+        pitch -= input.mouseDy * camera.sensitivity;
         pitch = Mathf.Clamp(pitch, camera.minPitch, camera.maxPitch);
 
         Quaternion look = Quaternion.Euler(pitch, yaw, 0f);

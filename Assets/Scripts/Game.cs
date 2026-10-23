@@ -5,6 +5,8 @@ public static class Game
     static PlayerInputSystem playerInputSystem;
     static PlayerSystem playerSystem;
     static CameraSystem cameraSystem;
+    static LampSystem lampSystem;
+    static AnomalySystem anomalySystem;
 
     // Once before the first scene loads (before any Awake)
     public static void Init()
@@ -12,6 +14,10 @@ public static class Game
         playerInputSystem = new PlayerInputSystem();
         playerSystem = new PlayerSystem();
         cameraSystem = new CameraSystem();
+        lampSystem = new LampSystem();
+        anomalySystem = new AnomalySystem();
+        anomalySystem.BeginAnomalies();
+
         Debug.Log("init");
 
         Cursor.lockState = CursorLockMode.Locked; // freeze cursor on screen centre
@@ -27,8 +33,22 @@ public static class Game
     // On every frame after Update.ScriptRunBehaviourUpdate
     public static void FrameUpdate(float dt)
     {
-        playerInputSystem.ReadInputs();
-        PlayerInput input = playerInputSystem.input;
+        PlayerInput input = playerInputSystem.ReadInputs();
+
+        anomalySystem.Update(dt);
+
+        if (AnomalySystem.IsReporting())
+        {
+            input.mouseDx = 0;
+            input.mouseDy = 0;
+            Cursor.lockState =  CursorLockMode.None;
+            Cursor.visible = true;
+        }
+        else
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
+        }
 
         if (PlayerSystem.player && CameraSystem.camera)
         {
@@ -39,6 +59,7 @@ public static class Game
             Vector3 right = CameraSystem.camera.transform.right;
             playerSystem.Move(input, fwd, right, dt);
         }
+
     }
 
     // On every physics step after FixedUpdate.ScriptRunBehaviourFixedUpdate

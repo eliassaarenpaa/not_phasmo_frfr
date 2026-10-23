@@ -12,7 +12,7 @@ public class PlayerInputSystem
 {
     public PlayerInput input;
 
-    public void ReadInputs()
+    public PlayerInput ReadInputs()
     {
         Vector2 move = new Vector2(
             Input.GetAxisRaw("Horizontal"),
@@ -24,5 +24,7 @@ public class PlayerInputSystem
 
         input.mouseDx = Input.GetAxisRaw("Mouse X");
         input.mouseDy = Input.GetAxisRaw("Mouse Y");
+
+        return input;
     }
 }
