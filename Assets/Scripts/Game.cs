@@ -13,6 +13,9 @@ public static class Game
         playerSystem = new PlayerSystem();
         cameraSystem = new CameraSystem();
         Debug.Log("init");
+
+        Cursor.lockState = CursorLockMode.Locked; // freeze cursor on screen centre
+        Cursor.visible = false; // invisible cursor
     }
 
     // Once on quit / exiting play mode
@@ -25,10 +28,16 @@ public static class Game
     public static void FrameUpdate(float dt)
     {
         playerInputSystem.ReadInputs();
+        PlayerInput input = playerInputSystem.input;
 
-        if (PlayerSystem.player)
+        if (PlayerSystem.player && CameraSystem.camera)
         {
-            cameraSystem.FirstPersonFollowRotate(playerInputSystem.input, PlayerSystem.player.transform, dt);
+            Transform cam_target = PlayerSystem.player.transform;
+            cameraSystem.FirstPersonFollowRotate(input, cam_target, dt);
+
+            Vector3 fwd = CameraSystem.camera.transform.forward;
+            Vector3 right = CameraSystem.camera.transform.right;
+            playerSystem.Move(input, fwd, right, dt);
         }
     }
 
