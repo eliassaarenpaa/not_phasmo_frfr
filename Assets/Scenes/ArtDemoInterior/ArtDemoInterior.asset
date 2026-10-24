@@ -99,6 +99,7 @@ MonoBehaviour:
   - {fileID: 3839405011882845910}
   - {fileID: -7508496037564726044}
   - {fileID: -4690350841039552297}
+  - {fileID: 5150046472279453237}
   - {fileID: 2293502640531068262}
   - {fileID: 4424950612528803962}
 --- !u!114 &2293502640531068262
@@ -234,12 +235,12 @@ MonoBehaviour:
   active: 1
   m_AdvancedMode: 0
   threshold:
-    m_OverrideState: 0
-    m_Value: 0.9
+    m_OverrideState: 1
+    m_Value: 0.69
     min: 0
   intensity:
-    m_OverrideState: 0
-    m_Value: 0
+    m_OverrideState: 1
+    m_Value: 1.85
     min: 0
   scatter:
     m_OverrideState: 0
