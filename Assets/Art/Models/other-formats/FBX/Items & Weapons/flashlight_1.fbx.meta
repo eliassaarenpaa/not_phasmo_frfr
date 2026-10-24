@@ -3,7 +3,12 @@ guid: 3b0c234a96a17b743980c9ce7fa303e5
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: flashlight_1
+    second: {fileID: 2100000, guid: 26146a7ae3abc9143a2e3b81337896ab, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
