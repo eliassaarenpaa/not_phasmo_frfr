@@ -3,7 +3,22 @@ guid: 6bda004aebc2f9f49a14f04e8e0a1a86
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: canned_foods_mp_1
+    second: {fileID: 2100000, guid: e4effe9766e22ea42ad5be210e38236b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: glass_bottles_1
+    second: {fileID: 2100000, guid: 73d5eb5ade2d00e48aee2ce1857fd11a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: wooden_crate_7_1
+    second: {fileID: 2100000, guid: 44f71cde6e7b6b947ae2bb628757063c, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
