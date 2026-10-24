@@ -3,7 +3,12 @@ guid: e617ce553dc4473458f6ed91b8134436
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: vents_mp_1
+    second: {fileID: 2100000, guid: 658bdc97ccc8ea143a01d05cc3b77edc, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0

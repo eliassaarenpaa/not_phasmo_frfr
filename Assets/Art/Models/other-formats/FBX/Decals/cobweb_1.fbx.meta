@@ -3,7 +3,12 @@ guid: 9476ab96e3a9df8428270dfbb6f267a1
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: cobweb_1
+    second: {fileID: 2100000, guid: 30740c45e0f6f654a810ff7a637ab470, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
