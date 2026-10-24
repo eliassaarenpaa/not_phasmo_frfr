@@ -8,6 +8,7 @@ public struct PlayerInput
     public float mouseDy;
 
     public bool isInteract;
+    public bool isBack;
 }
 
 public class PlayerInputSystem
@@ -28,6 +29,7 @@ public class PlayerInputSystem
         input.mouseDy = Input.GetAxisRaw("Mouse Y");
 
         input.isInteract = Input.GetKeyDown(KeyCode.E);
+        input.isBack = Input.GetKeyDown(KeyCode.Escape);
 
         return input;
     }

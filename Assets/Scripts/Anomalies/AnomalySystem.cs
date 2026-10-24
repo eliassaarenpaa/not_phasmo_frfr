@@ -3,25 +3,38 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
+public enum AnomalyScreenType
+{
+    None,
+    SelectRoomScreen,
+    SelectTypeScreen,
+    ReportScreen,
+}
+
 public enum AnomalyType
 {
     None,
-    ObjectMoved,
     ObjectChanged,
-    Electrical,
+    ObjectMoved,
+    ObjectRemoved,
+    UnknownEntity,
+    ElectricalDisturbance,
 }
 
 public enum RoomType
 {
     None,
-    Room1,
-    Room2,
-    Room3,
+    LivingRoom,
+    Cellar,
+    Kitchen,
+    MainHall,
+    Bathroom,
 }
 
 public struct Anomaly : IEquatable<Anomaly>
@@ -36,9 +49,12 @@ public struct Anomaly : IEquatable<Anomaly>
 
 public class AnomalySystem
 {
-    bool is_active = false;
+    public bool isReporting = false;
+    public bool isWaitingForResult = false;
+    float reportTime;
+    bool isActive = false;
     float timer;
-    float time_at_next_anomaly;
+    float timeAtNextAnomaly;
     float intensity;
     List<Anomaly> active = new List<Anomaly>();
 
@@ -46,15 +62,10 @@ public class AnomalySystem
     static List<AnomalyObject> objects = new List<AnomalyObject>();
 
 
-    static AnomalyUI ui = null;
-    static AnomalyReportTrigger trigger = null;
+    public static AnomalyUI ui = null;
+    public static AnomalyReportTrigger trigger = null;
     RoomType selectedRoom = RoomType.None;
     AnomalyType selectedType = AnomalyType.None;
-
-    public static bool IsReporting()
-    {
-        return ui && ui.gameObject.activeSelf && trigger && trigger.isPlayerOnTrigger;
-    }
 
     public static void Register(AnomalyUI _ui)
     {
@@ -85,13 +96,13 @@ public class AnomalySystem
     public void BeginAnomalies()
     {
         timer = Time.time;
-        is_active = true;
-        time_at_next_anomaly = GetTimeAtNextAnomaly();
+        isActive = true;
+        timeAtNextAnomaly = GetTimeAtNextAnomaly();
     }
 
     public void EndAnomalies()
     {
-        is_active = false;
+        isActive = false;
         active.Clear();
     }
 
@@ -159,7 +170,7 @@ public class AnomalySystem
         Debug.Log($"Anomaly started: {a.anomaly} in {a.room}");
     }
 
-    public void Report(AnomalyType type, RoomType room)
+    public bool Report(AnomalyType type, RoomType room)
     {
         Debug.Log("ANOMALY REPORTED");
         selectedRoom = RoomType.None;
@@ -180,6 +191,7 @@ public class AnomalySystem
         }
 
         Debug.Log(correct ? "CORRECT" : "INCORRECT");
+        return correct;
     }
 
     static void SetButtonColor(Button btn, Color c)
@@ -191,68 +203,123 @@ public class AnomalySystem
         btn.colors = cb;
     }
 
-    public void Update(float dt)
+    static void SetActiveScreen(AnomalyScreenType type)
     {
-        if (!is_active)
+        ui.roomSelectScreen.SetActive(type == AnomalyScreenType.SelectRoomScreen);
+        ui.typeSelectScreen.SetActive(type == AnomalyScreenType.SelectTypeScreen);
+        ui.reportScreen.SetActive(type == AnomalyScreenType.ReportScreen);
+    }
+
+    public void Update(PlayerInput input, float dt)
+    {
+        if (!isActive || !ui)
             return;
 
         timer += dt;
         intensity += 0.1f * dt;
 
-        if (Time.time >= time_at_next_anomaly)
+        if (Time.time >= timeAtNextAnomaly)
         {
             DoAnomaly();
-            time_at_next_anomaly = GetTimeAtNextAnomaly();
+            timeAtNextAnomaly = GetTimeAtNextAnomaly();
         }
 
         if (trigger.isPlayerOnTrigger)
         {
-            if (ui)
+            if (!isReporting)
             {
-                foreach (AnomalyRoomButton b in ui.roomButtons)
+                if (input.isInteract)
                 {
-                    if (b.clicked)
-                    {
-                        selectedRoom = b.room;
-                        b.clicked = false;
-                    }
-
-                    SetButtonColor(b.button, selectedRoom == b.room ? Color.red : Color.white);
-                }
-
-                foreach (AnomalyTypeButton b in ui.typeButtons)
-                {
-                    if (b.clicked)
-                    {
-                        selectedType = b.type;
-                        b.clicked = false;
-                    }
-
-                    SetButtonColor(b.button, selectedType == b.type ? Color.red : Color.white);
-                }
-
-                if (ui.reportButton.clicked)
-                {
-                    if (selectedRoom != RoomType.None && selectedType != AnomalyType.None)
-                    {
-                        Report(selectedType, selectedRoom);
-                    }
-
-
-                    ui.reportButton.clicked = false;
+                    isReporting = true;
                 }
             }
         }
-        else
+
+        if (isReporting)
         {
-            selectedRoom = RoomType.None;
-            selectedType = AnomalyType.None;
+            if (!isWaitingForResult)
+            {
+                if (input.isBack) 
+                {
+                    isReporting = false;
+                }
+            }
+
+            foreach (AnomalyRoomButton b in ui.roomButtons)
+            {
+                b.selectedTickbox.SetActive(b.room == selectedRoom);
+
+                if (b.clicked)
+                {
+                    selectedRoom = b.room;
+                    b.clicked = false;
+                }
+            }
+
+            foreach (AnomalyTypeButton b in ui.typeButtons)
+            {
+                b.selectedTickbox.SetActive(b.type == selectedType);
+
+                if (b.clicked)
+                {
+                    selectedType = b.type;
+                    b.clicked = false;
+                }
+            }
+
+            foreach (AnomalyNextButton b in ui.nextButtons)
+            {
+                if (b.clicked)
+                {
+                    if (ui.roomSelectScreen.activeSelf && selectedRoom != RoomType.None
+                        || ui.typeSelectScreen.activeSelf && selectedType != AnomalyType.None)
+                    {
+                        SetActiveScreen(b.nextScreen);
+                    }
+
+                    b.clicked = false;
+                }
+            }
+
+            if (ui.reportButton.clicked)
+            {
+                if (selectedRoom != RoomType.None && selectedType != AnomalyType.None && !isWaitingForResult)
+                {
+                    isWaitingForResult = true;
+                    reportTime = Time.time;
+                }
+
+                ui.reportButton.clicked = false;
+            }
         }
 
-        ui.gameObject.SetActive(trigger.isPlayerOnTrigger);
+        if (isWaitingForResult)
+        {
+            float reportDuration = 10.0f;
+            float resetDuration = 3.0f;
+            float elapsed = Time.time - reportTime;
+            float remaining = Mathf.Max(0f, reportDuration - elapsed);
+            ui.reportButton.tmpro.text = $"REPORTING... {Mathf.CeilToInt(remaining)}";
 
+            if (Time.time >= reportTime + reportDuration)
+            {
+                if (Report(selectedType, selectedRoom))
+                {
+                    ui.reportButton.tmpro.text = "[ANOMALY REMOVED]";
+                }
+                else
+                {
+                    ui.reportButton.tmpro.text = "[ANOMALY NOT FOUND]";
+                }
+            }
+
+            if (Time.time >= reportTime + reportDuration + resetDuration)
+            {
+                ui.reportButton.tmpro.text = "< REPORT >";
+                SetActiveScreen(AnomalyScreenType.SelectRoomScreen);
+                isWaitingForResult = false;
+            }
+        }
     }
-
-
 
 }

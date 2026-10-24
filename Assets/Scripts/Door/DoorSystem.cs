@@ -7,18 +7,14 @@ public class DoorSystem
 {
     public bool isPlayerOutside = true;
 
-    static DoorUI ui;
 
     static List<DoorTeleporter> doorTPs = new List<DoorTeleporter>();
 
     public bool isEnterDoor;
-    public Vector3 doorExitPoint;
+    public bool isPlayerOnDoorTrigger;
+    public Transform doorExitTransform;
 
 
-    public static void Register(DoorUI _ui)
-    {
-        ui = _ui;
-    }
 
     public static void Register(DoorTeleporter tp)
     {
@@ -40,13 +36,15 @@ public class DoorSystem
         {
             if (input.isInteract)
             {
+                door.sceneDisable.SetActive(false);
+                door.sceneEnable.SetActive(true);
+
                 isPlayerOutside = door.isInside; // interacting with inside door == going outside
                 isEnterDoor = true;
-                doorExitPoint = door.exit.transform.position;
+                doorExitTransform = door.exit.transform;
             }
         }
 
-        ui.gameObject.SetActive(door != null);
-
+        isPlayerOnDoorTrigger = door != null;
     }
 }

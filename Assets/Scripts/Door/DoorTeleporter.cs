@@ -8,6 +8,9 @@ public class DoorTeleporter : MonoBehaviour
     public DoorTriggerArea trigger;
     public Transform exit;
 
+    public GameObject sceneEnable;
+    public GameObject sceneDisable;
+
     private void OnEnable() => DoorSystem.Register(this);
     private void OnDisable() => DoorSystem.Unregister(this);
 }

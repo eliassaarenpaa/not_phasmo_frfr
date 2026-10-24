@@ -31,5 +31,12 @@ public class CameraSystem
             target.position + camera.offset,
             look);
     }
+
+    public void LerpToTrasnform(Transform t, float dt)
+    {
+        Vector3 p = Vector3.Lerp(camera.transform.position, t.position, camera.transitionSpeedLinear * dt);
+        Quaternion r = Quaternion.Lerp(camera.transform.rotation, t.rotation, camera.transitionSpeedAngular * dt);
+        camera.transform.SetPositionAndRotation(p, r);
+    }
    
 }

@@ -8,6 +8,7 @@ public static class Game
     static LampSystem lampSystem;
     static AnomalySystem anomalySystem;
     static DoorSystem doorSystem;
+    static InteractSystem interactSystem;
 
     // Once before the first scene loads (before any Awake)
     public static void Init()
@@ -19,11 +20,9 @@ public static class Game
         anomalySystem = new AnomalySystem();
         anomalySystem.BeginAnomalies();
         doorSystem = new DoorSystem();
+        interactSystem = new InteractSystem();
 
         Debug.Log("init");
-
-        Cursor.lockState = CursorLockMode.Locked; // freeze cursor on screen centre
-        Cursor.visible = false; // invisible cursor
     }
 
     // Once on quit / exiting play mode
@@ -35,42 +34,60 @@ public static class Game
     // On every frame after Update.ScriptRunBehaviourUpdate
     public static void FrameUpdate(float dt)
     {
+        if (!PlayerSystem.player || !CameraSystem.camera) return;
+
         PlayerInput input = playerInputSystem.ReadInputs();
 
-        anomalySystem.Update(dt);
+        anomalySystem.Update(input, dt);
 
-        if (AnomalySystem.IsReporting())
+        if (anomalySystem.isWaitingForResult)
         {
+            input.moveX = 0;
+            input.moveZ = 0;
             input.mouseDx = 0;
             input.mouseDy = 0;
-            Cursor.lockState = CursorLockMode.None;
-            Cursor.visible = true;
-        }
-        else
-        {
+
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
         }
-
-        doorSystem.Update(input, dt);
-
-        if (doorSystem.isEnterDoor)
+        else
         {
-            PlayerSystem.player.transform.position = doorSystem.doorExitPoint;
+            Cursor.lockState = anomalySystem.isReporting ? CursorLockMode.None : CursorLockMode.Locked;
+            Cursor.visible = anomalySystem.isReporting;
         }
 
-        if (PlayerSystem.player && CameraSystem.camera)
+        if (anomalySystem.isReporting)
+        {
+            input.moveX = 0;
+            input.moveZ = 0;
+            input.mouseDx = 0;
+            input.mouseDy = 0;
+
+            Transform cam_target = AnomalySystem.ui.cameraPcLookat;
+            cameraSystem.LerpToTrasnform(cam_target, dt);
+        }
+        else
         {
             Transform cam_target = PlayerSystem.player.transform;
             cameraSystem.FirstPersonFollowRotate(input, cam_target, dt);
 
-            Vector3 fwd = CameraSystem.camera.transform.forward;
-            Vector3 right = CameraSystem.camera.transform.right;
-            playerSystem.Move(input, fwd, right, dt);
-
             playerSystem.UpdateFootstepSound(doorSystem.isPlayerOutside);
+
+            doorSystem.Update(input, dt);
+
+            if (doorSystem.isEnterDoor)
+            {
+                PlayerSystem.player.transform.SetPositionAndRotation(doorSystem.doorExitTransform.position, doorSystem.doorExitTransform.rotation);
+            }
         }
 
+        LampSystem.SetLampActive(!AnomalySystem.trigger.isPlayerOnTrigger);
+
+        Vector3 fwd = CameraSystem.camera.transform.forward;
+        Vector3 right = CameraSystem.camera.transform.right;
+        playerSystem.Move(input, fwd, right, dt);
+
+        interactSystem.Update(doorSystem.isPlayerOnDoorTrigger, AnomalySystem.trigger.isPlayerOnTrigger, anomalySystem.isReporting, anomalySystem.isWaitingForResult);
     }
 
     // On every physics step after FixedUpdate.ScriptRunBehaviourFixedUpdate
