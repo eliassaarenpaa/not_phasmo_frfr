@@ -81,7 +81,7 @@ public static class Game
             }
         }
 
-        LampSystem.SetLampActive(!AnomalySystem.trigger.isPlayerOnTrigger);
+       // LampSystem.SetLampActive(!AnomalySystem.trigger.isPlayerOnTrigger);
 
         Vector3 fwd = CameraSystem.camera.transform.forward;
         Vector3 right = CameraSystem.camera.transform.right;

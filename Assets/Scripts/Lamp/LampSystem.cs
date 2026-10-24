@@ -18,11 +18,6 @@ public class LampSystem
     {
         if (!lamp) return;
 
-        if(lamp.gameObject.activeSelf == active)
-        {
-            return;
-        }
-
         if (lamp.gameObject.activeSelf)
         {
             // play disable sound   
