@@ -9,6 +9,11 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: cross_mp_2
     second: {fileID: 2100000, guid: 8e093a947e3171d4290d79207a20be8d, type: 2}
+  - first:
+      type: UnityEngine:Texture2D
+      assembly: UnityEngine.CoreModule
+      name: cross_mp_2
+    second: {fileID: 2800000, guid: cd709f684c045cb42a9fb07f491dc199, type: 3}
   materials:
     materialImportMode: 1
     materialName: 0
