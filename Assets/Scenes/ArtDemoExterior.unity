@@ -18067,6 +18067,11 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[1]
       value: 
       objectReference: {fileID: 2100000, guid: f63a9b67560646e4b8600c5578936dd7, type: 2}
+    - target: {fileID: -4399005053579852254, guid: 8d9452b6cefbdd44886d96b12204454c,
+        type: 3}
+      propertyPath: m_StaticEditorFlags
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: -2288707043539115488, guid: 8d9452b6cefbdd44886d96b12204454c,
         type: 3}
       propertyPath: m_LocalScale.x
@@ -18101,6 +18106,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Stacked
+      objectReference: {fileID: 0}
+    - target: {fileID: 5401072559265229469, guid: 8d9452b6cefbdd44886d96b12204454c,
+        type: 3}
+      propertyPath: m_CastShadows
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5401072559265229469, guid: 8d9452b6cefbdd44886d96b12204454c,
         type: 3}
