@@ -58,6 +58,9 @@ public static class Game
             Vector3 fwd = CameraSystem.camera.transform.forward;
             Vector3 right = CameraSystem.camera.transform.right;
             playerSystem.Move(input, fwd, right, dt);
+
+            bool outside = false; // TODO
+            playerSystem.UpdateFootstepSound(outside);
         }
 
     }
