@@ -46,6 +46,7 @@ public enum RoomType
 public struct Anomaly : IEquatable<Anomaly>
 {
     public AnomalyObject anomaly_obj;
+    public AnomalyEffect effect;
     public AnomalyType anomaly;
     public RoomType room;
     public bool Equals(Anomaly o) => anomaly == o.anomaly && room == o.room;
@@ -144,44 +145,28 @@ public class AnomalySystem
             );
     }
 
-
+   
 
     public void DoAnomaly()
     {
-        Anomaly a = new Anomaly();
-        AnomalyType type = AnomalyType.ObjectMoved;
-        //AnomalyType type = GetRandomEnum<AnomalyType>();
-        a.anomaly = type;
+        AnomalyObject o = GetRandomAnomalyObject();
+        if (o == null) { Debug.LogWarning("No anomaly object available."); return; }
 
-        switch (type)
+        AnomalyEffect e = o.GetRandomEffect();
+
+        if (!e.Apply(o))
         {
-            case AnomalyType.ObjectChanged:
-                {
-                    // TODO:
-                    break;
-                }
-            case AnomalyType.ObjectMoved:
-                {
-                    AnomalyObject o = GetRandomAnomalyObject();
-                    if (o == null) return;
-
-                    a.room = o.room;
-                    a.anomaly_obj = o;
-
-                    switch (o.effect)
-                    {
-                        case AnomalyEffectType.PrefabToggle:
-                            {
-                                o.original_ver.gameObject.SetActive(false);
-                                o.anomaly_ver.gameObject.SetActive(true);
-                                break;
-                            }
-                    }
-
-                    //o.transform.position = GetRandomPosAround(o.transform.position);
-                    break;
-                }
+            Debug.LogWarning($"Effect {e.type}/{e.effect} could not be applied.");
+            return;
         }
+
+        var a = new Anomaly
+        {
+            anomaly_obj = o,
+            room = o.room,
+            anomaly = e.type,
+            effect = e
+        };
 
         active.Add(a);
         Debug.Log($"Anomaly started: {a.anomaly} in {a.room}");
@@ -200,17 +185,10 @@ public class AnomalySystem
 
         if (correct)
         {
-            AnomalyObject o = active[idx].anomaly_obj;
+            Anomaly a = active[idx];
+            AnomalyObject o = a.anomaly_obj;
 
-            switch (o.effect)
-            {
-                case AnomalyEffectType.PrefabToggle:
-                    {
-                        o.original_ver.gameObject.SetActive(true);
-                        o.anomaly_ver.gameObject.SetActive(false);
-                        break;
-                    }
-            }
+            a.effect.Revert(o);
 
             active.RemoveAt(idx);
         }
