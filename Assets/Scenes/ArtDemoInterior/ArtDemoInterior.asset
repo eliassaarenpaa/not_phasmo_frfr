@@ -16,7 +16,7 @@ MonoBehaviour:
   m_AdvancedMode: 0
   temperature:
     m_OverrideState: 1
-    m_Value: 11
+    m_Value: -39
     min: -100
     max: 100
   tint:
@@ -60,6 +60,37 @@ MonoBehaviour:
   rounded:
     m_OverrideState: 0
     m_Value: 0
+--- !u!114 &-6242073823667052326
+MonoBehaviour:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70afe9e12c7a7ed47911bb608a23a8ff, type: 3}
+  m_Name: SplitToning
+  m_EditorClassIdentifier: 
+  active: 1
+  m_AdvancedMode: 0
+  shadows:
+    m_OverrideState: 0
+    m_Value: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    hdr: 0
+    showAlpha: 0
+    showEyeDropper: 1
+  highlights:
+    m_OverrideState: 0
+    m_Value: {r: 0.5, g: 0.5, b: 0.5, a: 1}
+    hdr: 0
+    showAlpha: 0
+    showEyeDropper: 1
+  balance:
+    m_OverrideState: 0
+    m_Value: 0
+    min: -100
+    max: 100
 --- !u!114 &-4690350841039552297
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -124,7 +155,7 @@ MonoBehaviour:
     m_Value: 512
   colorPrecision:
     m_OverrideState: 1
-    m_Value: 257.6
+    m_Value: 118.8
 --- !u!114 &3599935091391539820
 MonoBehaviour:
   m_ObjectHideFlags: 3
@@ -171,20 +202,20 @@ MonoBehaviour:
   m_AdvancedMode: 0
   shadows:
     m_OverrideState: 1
-    m_Value: {x: 0.7908112, y: 1, z: 0.8894924, w: 0.065789476}
+    m_Value: {x: 0.9050607, y: 1, z: 0.94981545, w: -0.6182573}
   midtones:
     m_OverrideState: 1
-    m_Value: {x: 1, y: 0.96017444, z: 0.8662168, w: -0.055013973}
+    m_Value: {x: 1, y: 0.95295674, z: 0.66936886, w: -0.10983542}
   highlights:
     m_OverrideState: 1
-    m_Value: {x: 0.9952608, y: 0.9905218, z: 1, w: 0}
+    m_Value: {x: 1, y: 0.99279535, z: 0.92193866, w: 0.082987554}
   shadowsStart:
     m_OverrideState: 1
-    m_Value: 0.16
+    m_Value: 0
     min: 0
   shadowsEnd:
     m_OverrideState: 1
-    m_Value: 0.69
+    m_Value: 0.1
     min: 0
   highlightsStart:
     m_OverrideState: 1
@@ -213,7 +244,7 @@ MonoBehaviour:
     m_Value: 0
   ditherThreshold:
     m_OverrideState: 1
-    m_Value: 29.6
+    m_Value: 130.7
   ditherStrength:
     m_OverrideState: 1
     m_Value: 1
@@ -240,7 +271,7 @@ MonoBehaviour:
     min: 0
   intensity:
     m_OverrideState: 1
-    m_Value: 1.85
+    m_Value: 1.84
     min: 0
   scatter:
     m_OverrideState: 0
@@ -301,7 +332,7 @@ MonoBehaviour:
   master:
     m_OverrideState: 1
     m_Value:
-      <length>k__BackingField: 2
+      <length>k__BackingField: 3
       m_Loop: 0
       m_ZeroValue: 0
       m_Range: 1
@@ -312,7 +343,16 @@ MonoBehaviour:
           time: 0
           value: 0
           inSlope: 0
-          outSlope: 1
+          outSlope: 2.189959
+          tangentMode: 0
+          weightedMode: 0
+          inWeight: 0
+          outWeight: 0
+        - serializedVersion: 3
+          time: 0.31736526
+          value: 0.49334723
+          inSlope: 1.0388925
+          outSlope: 1.0388925
           tangentMode: 0
           weightedMode: 0
           inWeight: 0
