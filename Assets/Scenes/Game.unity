@@ -98,7 +98,7 @@ LightmapSettings:
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
   m_LightingDataAsset: {fileID: 0}
-  m_UseShadowmask: 0
+  m_UseShadowmask: 1
 --- !u!196 &4
 NavMeshSettings:
   serializedVersion: 2
@@ -42035,10 +42035,10 @@ Light:
   serializedVersion: 10
   m_Type: 0
   m_Shape: 0
-  m_Color: {r: 1, g: 0.7990159, b: 0.513, a: 1}
-  m_Intensity: 30
-  m_Range: 10
-  m_SpotAngle: 60
+  m_Color: {r: 1, g: 0.85687095, b: 0.652, a: 1}
+  m_Intensity: 86.1
+  m_Range: 23
+  m_SpotAngle: 71.205
   m_InnerSpotAngle: 0
   m_CookieSize: 10
   m_Shadows:
@@ -42536,6 +42536,26 @@ Transform:
     type: 3}
   m_PrefabInstance: {fileID: 1288671447}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1288671449 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9122624109711729783, guid: 2930e634f992ed340bc7fc27e4243d13,
+    type: 3}
+  m_PrefabInstance: {fileID: 1288671447}
+  m_PrefabAsset: {fileID: 0}
+--- !u!64 &1288671450
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1288671449}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: -5053925668127403250, guid: 2c1961fdd1674dd48b2e0a83a5c41171, type: 3}
 --- !u!1 &1290765514
 GameObject:
   m_ObjectHideFlags: 0
