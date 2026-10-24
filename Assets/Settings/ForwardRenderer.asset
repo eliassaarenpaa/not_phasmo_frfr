@@ -26,9 +26,10 @@ MonoBehaviour:
   m_Name: ForwardRenderer
   m_EditorClassIdentifier: 
   m_RendererFeatures:
-  - {fileID: -4957589122402937634}
+  - {fileID: 5181935120392848555}
   - {fileID: 7480766464477282065}
-  m_RendererFeatureMap: de14d5a8f51a33bb11bfd2f27605d167
+  - {fileID: -4957589122402937634}
+  m_RendererFeatureMap: ab04237489eee94711bfd2f27605d167de14d5a8f51a33bb
   postProcessData: {fileID: 11400000, guid: 41439944d30ece34e96484bdb6645b55, type: 2}
   shaders:
     blitPS: {fileID: 4800000, guid: c17132b1f77d20942aa75f8429c0f8bc, type: 3}
@@ -51,6 +52,19 @@ MonoBehaviour:
     failOperation: 0
     zFailOperation: 0
   m_ShadowTransparentReceive: 1
+--- !u!114 &5181935120392848555
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3277e3c6431244fb960cbd72870858e2, type: 3}
+  m_Name: Fog
+  m_EditorClassIdentifier: 
+  m_Active: 0
 --- !u!114 &7480766464477282065
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -61,6 +75,6 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: df6534dd185a4f18b50629b58de296b6, type: 3}
-  m_Name: NewPixelationRenderFeature
+  m_Name: Pixelation
   m_EditorClassIdentifier: 
   m_Active: 1

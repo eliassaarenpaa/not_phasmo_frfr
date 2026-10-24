@@ -45,9 +45,11 @@
             uv.x = floor(uv.x * _WidthPixelation) / _WidthPixelation;
             uv.y = floor(uv.y * _HeightPixelation) / _HeightPixelation;
             
-            float4 Color = tex2D(_MainTex, uv) ;
+            float4 Color = tex2D(_MainTex, uv);
+            float4 base = Color;
             //color precision
             Color = floor(Color * _ColorPrecision)/_ColorPrecision;
+            Color = max(Color, base * .3);
             return Color;
         }
     ENDCG

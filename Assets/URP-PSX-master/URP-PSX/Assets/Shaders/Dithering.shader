@@ -121,6 +121,7 @@
 
         float4 Frag (v2f i) : SV_Target
         {
+            // return float4(1,1,1,1);
             //base texture 
             float4 Color = tex2D(_MainTex, i.uv);
             
