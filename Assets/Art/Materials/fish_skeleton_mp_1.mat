@@ -8,7 +8,7 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: fish_skeleton_mp_1
-  m_Shader: {fileID: -6465566751694194690, guid: 2b3b7d0b179748b449e12721ea4fcfa6,
+  m_Shader: {fileID: -6465566751694194690, guid: 16584333b0835c7458955cb0dbba5127,
     type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
@@ -64,8 +64,10 @@ Material:
     - Vector1_21C41D02: 256
     - Vector1_6F288C5B: 0
     - Vector1_B2CC132F: 52
+    - Vector1_B9633B5D: 1
     - Vector1_B9994903: 11
     - Vector1_E8746023: 132
+    - Vector1_FD3C8C98: 0
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1
@@ -89,6 +91,7 @@ Material:
     - _ZWrite: 0
     m_Colors:
     - Color_2E5415DE: {r: 1, g: 1, b: 1, a: 0}
+    - Color_3AB9CE1A: {r: 1, g: 1, b: 1, a: 1}
     - Vector2_8044833E: {r: 1, g: 1, b: 0, a: 0}
     - _BaseColor: {r: 0.8, g: 0.8, b: 0.8, a: 1}
     - _Color: {r: 0.8, g: 0.8, b: 0.8, a: 1}
