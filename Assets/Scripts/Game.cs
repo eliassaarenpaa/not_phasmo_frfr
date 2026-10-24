@@ -7,6 +7,7 @@ public static class Game
     static CameraSystem cameraSystem;
     static LampSystem lampSystem;
     static AnomalySystem anomalySystem;
+    static DoorSystem doorSystem;
 
     // Once before the first scene loads (before any Awake)
     public static void Init()
@@ -17,6 +18,7 @@ public static class Game
         lampSystem = new LampSystem();
         anomalySystem = new AnomalySystem();
         anomalySystem.BeginAnomalies();
+        doorSystem = new DoorSystem();
 
         Debug.Log("init");
 
@@ -41,13 +43,20 @@ public static class Game
         {
             input.mouseDx = 0;
             input.mouseDy = 0;
-            Cursor.lockState =  CursorLockMode.None;
+            Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
         }
         else
         {
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+        }
+
+        doorSystem.Update(input, dt);
+
+        if (doorSystem.isEnterDoor)
+        {
+            PlayerSystem.player.transform.position = doorSystem.doorExitPoint;
         }
 
         if (PlayerSystem.player && CameraSystem.camera)
@@ -59,8 +68,7 @@ public static class Game
             Vector3 right = CameraSystem.camera.transform.right;
             playerSystem.Move(input, fwd, right, dt);
 
-            bool outside = false; // TODO
-            playerSystem.UpdateFootstepSound(outside);
+            playerSystem.UpdateFootstepSound(doorSystem.isPlayerOutside);
         }
 
     }

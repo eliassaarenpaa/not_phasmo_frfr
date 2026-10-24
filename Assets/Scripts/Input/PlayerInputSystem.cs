@@ -6,6 +6,8 @@ public struct PlayerInput
     public float moveZ;
     public float mouseDx;
     public float mouseDy;
+
+    public bool isInteract;
 }
 
 public class PlayerInputSystem
@@ -24,6 +26,8 @@ public class PlayerInputSystem
 
         input.mouseDx = Input.GetAxisRaw("Mouse X");
         input.mouseDy = Input.GetAxisRaw("Mouse Y");
+
+        input.isInteract = Input.GetKeyDown(KeyCode.E);
 
         return input;
     }
