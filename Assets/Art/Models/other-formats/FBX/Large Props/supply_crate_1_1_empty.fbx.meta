@@ -3,7 +3,12 @@ guid: 0072da1b43be6614e9d321084b6d80b9
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: wooden_crate_7_1
+    second: {fileID: 2100000, guid: 44f71cde6e7b6b947ae2bb628757063c, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0

@@ -3,7 +3,12 @@ guid: 08e94d8372309a349aedb673364e16a9
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: potted_cactus_mp_1
+    second: {fileID: 2100000, guid: 90859b4198b46354d97c13df8a4652ff, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
