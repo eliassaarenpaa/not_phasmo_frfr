@@ -31,6 +31,7 @@ public class DoorSystem
         isEnterDoor = false;
 
         DoorTeleporter door = doorTPs.FirstOrDefault(d => d.trigger.isPlayerOnTrigger);
+        isPlayerOnDoorTrigger = door != null;
 
         if (door != null)
         {
@@ -45,6 +46,5 @@ public class DoorSystem
             }
         }
 
-        isPlayerOnDoorTrigger = door != null;
     }
 }
