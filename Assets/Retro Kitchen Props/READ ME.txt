@@ -1,0 +1,11 @@
+Hello! Thank you for purchasing my Retro Kitchen Props Assets!
+
+I hope they help you achieve that retro-style Kitchen design you're looking for.
+
+-------------------------
+
+There's two sample scenes where you'll find all the assets (Built-in and URP)! You can load it or simply select and drag the models from the "Models/Prefabs" folder to add them to the scene.
+
+-------------------------
+
+Comments are welcome, and please don't forget to rate it!

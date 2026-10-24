@@ -3,7 +3,162 @@ guid: 8d9452b6cefbdd44886d96b12204454c
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: batteries_mp_1
+    second: {fileID: 2100000, guid: db0510c1d8394ec48a96431da4e65116, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: books_mp_1
+    second: {fileID: 2100000, guid: 3ab2f21854ab54e49863450def60f6a6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: canned_foods_mp_1
+    second: {fileID: 2100000, guid: 197f1d3d71e7012469a1b54e39050518, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: cassette_tape_1
+    second: {fileID: 2100000, guid: c4a51f2a67ac446488eb9128521d4044, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: cell_phone_1
+    second: {fileID: 2100000, guid: 9a94b0bd581dec847b378a73481f7aa8, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: cross_1
+    second: {fileID: 2100000, guid: 6de2bf780c814924685d281ed7b0b113, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: crt_screen_mp_1.002
+    second: {fileID: 2100000, guid: 8bbf6510587e4b14ca900fe0f4db438a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: crt_screen_mp_2
+    second: {fileID: 2100000, guid: f18cf9fb079992f48a4e28caecbb9220, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: dosimeter_1
+    second: {fileID: 2100000, guid: b8144fd084280ec4fb9f4215394848ab, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: dosimeter_3
+    second: {fileID: 2100000, guid: 0d977212673505d42bd9699d3e53b3a1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: fish_skeleton_mp_1
+    second: {fileID: 2100000, guid: a293595fc07b7044cadc4babed1aae74, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: handheld_game_console_1
+    second: {fileID: 2100000, guid: e157750e6e6702d48a24574f91ec36bf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: misc_mp_1
+    second: {fileID: 2100000, guid: 990a69005fdd8d0419045cbc66919deb, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: misc_mp_3
+    second: {fileID: 2100000, guid: d826b5553b1b45b44aa49727b8e009c3, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: money_1
+    second: {fileID: 2100000, guid: 26309ccd6813e7b4aabd91885ef68b03, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: money_1.001
+    second: {fileID: 2100000, guid: aa16ae05c7095d84781c1dde32a3c0d1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: money_1.002
+    second: {fileID: 2100000, guid: c8ad3275f8556d0429f8073795554e97, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pc_accessories_mp_1
+    second: {fileID: 2100000, guid: adfed191a8de1974e8e6379bc4e86429, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pc_accessories_mp_1.001
+    second: {fileID: 2100000, guid: d6c067842adc18a49aace1c82907509d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pc_monitor_mp_1
+    second: {fileID: 2100000, guid: 0769da9af55b5fa4c8cad1943841f9f6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pc_mp_1
+    second: {fileID: 2100000, guid: 81f55de736db6fc469df75a6f1926ede, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pc_speakers_1
+    second: {fileID: 2100000, guid: 9cdb6ddd6558ae24c8b15c2949ac79e2, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pc_speakers_1.001
+    second: {fileID: 2100000, guid: 9a30dc3ce71ceb147b42e703cf6dd3ef, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pills_bottle_1
+    second: {fileID: 2100000, guid: caa9866a74714b3439e74d53c0e8dd75, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pills_bottle_1.001
+    second: {fileID: 2100000, guid: ad85e8937fdb57f47bffbafec8d3480d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pills_bottle_1.002
+    second: {fileID: 2100000, guid: 3a09f812ce1ef3947bec92fc23aa9437, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: pills_bottle_1.003
+    second: {fileID: 2100000, guid: f91600f473f43f448b2313f0913d4313, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: tvs_mp_1.002
+    second: {fileID: 2100000, guid: c32e0e3c439c3014589322409321f80a, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: underwear_mp_1
+    second: {fileID: 2100000, guid: 2db2293f3d0151c428dc7790cb6f690d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: vhs_tape_1
+    second: {fileID: 2100000, guid: 71e186fd759db8443993c382793b5259, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: walkie_talkie_1
+    second: {fileID: 2100000, guid: 05a87c36ada6f8343a4420add472791a, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
