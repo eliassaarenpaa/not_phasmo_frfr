@@ -3,7 +3,12 @@ guid: 5aa5fa3f64c1732499904cc0bc7518e6
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: canned_foods_mp_1
+    second: {fileID: 2100000, guid: e4effe9766e22ea42ad5be210e38236b, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
