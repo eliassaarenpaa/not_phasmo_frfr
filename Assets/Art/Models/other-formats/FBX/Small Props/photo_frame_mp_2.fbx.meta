@@ -3,7 +3,12 @@ guid: e3f36860554d980488e2760d18e2b9e9
 ModelImporter:
   serializedVersion: 19301
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: photo_frames_mp_1
+    second: {fileID: 2100000, guid: 855ac757e3272854ca53789bedc18067, type: 2}
   materials:
     materialImportMode: 1
     materialName: 0
