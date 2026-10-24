@@ -1,4 +1,6 @@
 using UnityEngine;
+using UnityEngine.UIElements;
+using Cursor = UnityEngine.Cursor;
 
 public static class Game
 {
@@ -40,6 +42,8 @@ public static class Game
 
         anomalySystem.Update(input, dt);
 
+        LampSystem.SetLampActive(!AnomalySystem.trigger.isPlayerOnTrigger);
+
         if (anomalySystem.isWaitingForResult)
         {
             input.moveX = 0;
@@ -58,6 +62,7 @@ public static class Game
 
         if (anomalySystem.isReporting)
         {
+
             input.moveX = 0;
             input.moveZ = 0;
             input.mouseDx = 0;
@@ -78,13 +83,15 @@ public static class Game
             if (doorSystem.isEnterDoor)
             {
                 PlayerSystem.player.transform.SetPositionAndRotation(doorSystem.doorExitTransform.position, doorSystem.doorExitTransform.rotation);
+                cameraSystem.LookAt(doorSystem.doorExitTransform.forward);
             }
         }
 
-       // LampSystem.SetLampActive(!AnomalySystem.trigger.isPlayerOnTrigger);
 
         Vector3 fwd = CameraSystem.camera.transform.forward;
         Vector3 right = CameraSystem.camera.transform.right;
+        Vector3 groundNormal = Vector3.up;
+       
         playerSystem.Move(input, fwd, right, dt);
 
         interactSystem.Update(doorSystem.isPlayerOnDoorTrigger, AnomalySystem.trigger.isPlayerOnTrigger, anomalySystem.isReporting, anomalySystem.isWaitingForResult);

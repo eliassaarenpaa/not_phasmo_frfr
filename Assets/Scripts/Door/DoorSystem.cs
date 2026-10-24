@@ -14,8 +14,6 @@ public class DoorSystem
     public bool isPlayerOnDoorTrigger;
     public Transform doorExitTransform;
 
-
-
     public static void Register(DoorTeleporter tp)
     {
         doorTPs.Add(tp);
@@ -37,7 +35,10 @@ public class DoorSystem
         {
             if (input.isInteract)
             {
-                door.sceneDisable.SetActive(false);
+                door.sceneDisable.transform.position = new Vector3(9999, 9999, 9999);
+                door.sceneEnable.transform.position = new Vector3(0, 0, 0);
+
+                door.sceneDisable.SetActive(true);
                 door.sceneEnable.SetActive(true);
 
                 isPlayerOutside = door.isInside; // interacting with inside door == going outside

@@ -9,6 +9,12 @@ using UnityEngine.Assertions;
 using UnityEngine.UI;
 using Debug = UnityEngine.Debug;
 
+public enum AnomalyEffectType
+{
+    None,
+    PrefabToggle,
+}
+
 public enum AnomalyScreenType
 {
     None,
@@ -49,6 +55,7 @@ public struct Anomaly : IEquatable<Anomaly>
 
 public class AnomalySystem
 {
+    bool gotResult = false;
     public bool isReporting = false;
     public bool isWaitingForResult = false;
     float reportTime;
@@ -90,7 +97,7 @@ public class AnomalySystem
 
     float GetTimeAtNextAnomaly()
     {
-        return Time.time + Mathf.Max(UnityEngine.Random.Range(15.0f, 30.0f) - intensity, 3.0f);
+        return Time.time + Mathf.Max(UnityEngine.Random.Range(3.0f, 5.0f) - intensity, 3.0f);
     }
 
     public void BeginAnomalies()
@@ -161,7 +168,17 @@ public class AnomalySystem
                     a.room = o.room;
                     a.anomaly_obj = o;
 
-                    o.transform.position = GetRandomPosAround(o.transform.position);
+                    switch (o.effect)
+                    {
+                        case AnomalyEffectType.PrefabToggle:
+                            {
+                                o.original_ver.gameObject.SetActive(false);
+                                o.anomaly_ver.gameObject.SetActive(true);
+                                break;
+                            }
+                    }
+
+                    //o.transform.position = GetRandomPosAround(o.transform.position);
                     break;
                 }
         }
@@ -184,9 +201,17 @@ public class AnomalySystem
         if (correct)
         {
             AnomalyObject o = active[idx].anomaly_obj;
-            // fix anomaly
-            o.transform.position = o.original_pos;
-            o.transform.localScale = o.original_scale;
+
+            switch (o.effect)
+            {
+                case AnomalyEffectType.PrefabToggle:
+                    {
+                        o.original_ver.gameObject.SetActive(true);
+                        o.anomaly_ver.gameObject.SetActive(false);
+                        break;
+                    }
+            }
+
             active.RemoveAt(idx);
         }
 
@@ -239,7 +264,7 @@ public class AnomalySystem
         {
             if (!isWaitingForResult)
             {
-                if (input.isBack) 
+                if (input.isBack)
                 {
                     isReporting = false;
                 }
@@ -295,21 +320,29 @@ public class AnomalySystem
 
         if (isWaitingForResult)
         {
-            float reportDuration = 10.0f;
+            float reportDuration = 5.0f;
             float resetDuration = 3.0f;
             float elapsed = Time.time - reportTime;
             float remaining = Mathf.Max(0f, reportDuration - elapsed);
-            ui.reportButton.tmpro.text = $"REPORTING... {Mathf.CeilToInt(remaining)}";
 
-            if (Time.time >= reportTime + reportDuration)
+            if (!gotResult)
             {
-                if (Report(selectedType, selectedRoom))
+                if (Time.time >= reportTime + reportDuration)
                 {
-                    ui.reportButton.tmpro.text = "[ANOMALY REMOVED]";
+                    if (Report(selectedType, selectedRoom))
+                    {
+                        ui.reportButton.tmpro.text = "[ANOMALY REMOVED]";
+                    }
+                    else
+                    {
+                        ui.reportButton.tmpro.text = "[ANOMALY NOT FOUND]";
+                    }
+
+                    gotResult = true;
                 }
                 else
                 {
-                    ui.reportButton.tmpro.text = "[ANOMALY NOT FOUND]";
+                    ui.reportButton.tmpro.text = $"REPORTING... {Mathf.CeilToInt(remaining)}";
                 }
             }
 
@@ -318,6 +351,7 @@ public class AnomalySystem
                 ui.reportButton.tmpro.text = "< REPORT >";
                 SetActiveScreen(AnomalyScreenType.SelectRoomScreen);
                 isWaitingForResult = false;
+                gotResult = false;
             }
         }
     }

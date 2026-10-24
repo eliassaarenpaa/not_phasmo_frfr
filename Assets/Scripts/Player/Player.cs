@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public LayerMask groundMask;
     public List<AudioClip> footsteps_inside = new List<AudioClip>();
 
     public List<AudioClip> footsteps_outside = new List<AudioClip>();

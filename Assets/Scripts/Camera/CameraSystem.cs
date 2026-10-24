@@ -19,6 +19,16 @@ public class CameraSystem
         camera = null;
     }
 
+    public void LookAt(Vector3 dir)
+    {
+        if (dir.sqrMagnitude < 1e-6f) return;
+        dir.Normalize();
+
+        yaw = Mathf.Atan2(dir.x, dir.z) * Mathf.Rad2Deg;
+        pitch = -Mathf.Asin(dir.y) * Mathf.Rad2Deg; 
+        pitch = Mathf.Clamp(pitch, camera.minPitch, camera.maxPitch);
+    }
+
     public void FirstPersonFollowRotate(PlayerInput input, Transform target, float dt)
     {
         yaw += input.mouseDx * camera.sensitivity;
@@ -38,5 +48,5 @@ public class CameraSystem
         Quaternion r = Quaternion.Lerp(camera.transform.rotation, t.rotation, camera.transitionSpeedAngular * dt);
         camera.transform.SetPositionAndRotation(p, r);
     }
-   
+
 }

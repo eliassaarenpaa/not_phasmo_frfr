@@ -5,8 +5,14 @@ using UnityEngine;
 public class AnomalyObject : MonoBehaviour
 {
     public RoomType room;
+    public AnomalyEffectType effect;
 
+    public Transform original_ver;
+    public Transform anomaly_ver;
+
+    [HideInInspector]
     public Vector3 original_pos;
+    [HideInInspector]
     public Vector3 original_scale;
 
 

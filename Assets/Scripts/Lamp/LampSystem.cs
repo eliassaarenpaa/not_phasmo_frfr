@@ -16,17 +16,6 @@ public class LampSystem
 
     public static void SetLampActive(bool active)
     {
-        if (!lamp) return;
-
-        if (lamp.gameObject.activeSelf)
-        {
-            // play disable sound   
-        }
-        else
-        {
-            // play ...
-        }
-
-        lamp.gameObject.SetActive(active);
+        lamp.light.enabled = active;
     }
 }

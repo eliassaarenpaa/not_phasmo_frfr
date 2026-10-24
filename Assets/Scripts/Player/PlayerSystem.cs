@@ -25,6 +25,16 @@ public class PlayerSystem
         Assert.IsNotNull(player);
         if (!player) { return; }
 
+        bool grounded = Physics.SphereCast(
+           player.transform.position + Vector3.up * 0.5f, 0.1f, Vector3.down,
+           out RaycastHit hit, 2.0f, player.groundMask, QueryTriggerInteraction.Ignore);
+
+        Vector3 groundNormal = Vector3.up;
+        if (grounded) groundNormal = hit.normal;
+        Debug.Log(groundNormal);
+
+        Vector3 n = groundNormal.sqrMagnitude > 0.001f ? groundNormal.normalized : Vector3.up;
+
         fwd.y = 0f;
         right.y = 0f;
         fwd.Normalize();
@@ -33,10 +43,18 @@ public class PlayerSystem
         Vector3 wish = fwd * input.moveZ + right * input.moveX;
         wish = Vector3.ClampMagnitude(wish, 1f);
 
-        Vector3 vel = player.rb.velocity;
+        float mag = wish.magnitude;
+        if (mag > 0.0001f)
+        {
+            wish = Vector3.ProjectOnPlane(wish, n).normalized * mag;
+        }
+
         Vector3 target = wish * player.speed;
-        
-        player.rb.velocity = new Vector3(target.x, vel.y, target.z);
+
+        Vector3 vel = player.rb.velocity;
+        float normalSpeed = Vector3.Dot(vel, n);
+
+        player.rb.velocity = target + n * normalSpeed;
     }
 
     AudioClip GetRandomClip(List<AudioClip> clips)
