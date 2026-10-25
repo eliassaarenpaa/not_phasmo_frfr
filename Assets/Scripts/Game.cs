@@ -136,7 +136,9 @@ public static class Game
                     if (doorSystem.numTimesEnteredDoor > 0)
                     {
                         clockSystem.UpdateTimer(dt);
-                        anomalySystem.UpdateAnomalyEventLoop(input, !doorSystem.isPlayerOutside, clockSystem.timer, ClockSystem.totalGameDuration, dt);
+                        Vector3 lookFwd = CameraSystem.camera.transform.forward;
+                        Vector3 playerPos = PlayerSystem.player.transform.position;
+                        anomalySystem.UpdateAnomalyEventLoop(input, playerPos, lookFwd, !doorSystem.isPlayerOutside, clockSystem.timer, ClockSystem.totalGameDuration, dt);
                     }
                     clockSystem.UpdateUI();
 

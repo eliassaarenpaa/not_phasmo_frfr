@@ -46,8 +46,9 @@ public enum RoomType
     Bathroom,
 }
 
-public struct Anomaly : IEquatable<Anomaly>
+public class Anomaly : IEquatable<Anomaly>
 {
+    public float entityTimeSeen;
     public AnomalyObject anomaly_obj;
     public AnomalyEffect effect;
     public AnomalyType anomaly;
@@ -60,10 +61,9 @@ public struct Anomaly : IEquatable<Anomaly>
 public class AnomalySystem
 {
     ThreatLevel threat;
-    public const int maxUnreportedAnomalies = 10;
     public const int maxAnomaliesPerRoom = 3;
 
-    public const float gracePeriodDuration = 10.0f;
+    public const float gracePeriodDuration = 120.0f;
 
     bool gotResult = false;
     public bool isReporting = false;
@@ -89,12 +89,9 @@ public class AnomalySystem
     new AnomalyTypeWeight { type = AnomalyType.ObjectChanged,         weight = 30f },
     new AnomalyTypeWeight { type = AnomalyType.ObjectMoved,           weight = 30f },
     new AnomalyTypeWeight { type = AnomalyType.ObjectRemoved,         weight = 25f },
-    new AnomalyTypeWeight { type = AnomalyType.UnknownEntity,         weight = 10f },
-    new AnomalyTypeWeight { type = AnomalyType.ElectricalDisturbance, weight = 5f  },
+    new AnomalyTypeWeight { type = AnomalyType.UnknownEntity,         weight = 8f },
+    new AnomalyTypeWeight { type = AnomalyType.ElectricalDisturbance, weight = 10f  },
 };
-
-
-
 
     public static float GetTypeWeight(AnomalyType t)
     {
@@ -168,7 +165,7 @@ public class AnomalySystem
 
     float GetTimeAtNextAnomaly()
     {
-        return Time.time + Mathf.Lerp(UnityEngine.Random.Range(5.0f, 5.0f), UnityEngine.Random.Range(5.0f, 5.0f), intensity);
+        return Time.time + Mathf.Lerp(UnityEngine.Random.Range(45.0f, 60.0f), UnityEngine.Random.Range(38.0f, 54.0f), intensity);
 
         //return Time.time + Mathf.Lerp(UnityEngine.Random.Range(60.0f, 120.0f), UnityEngine.Random.Range(15.0f, 30.0f), intensity);
     }
@@ -401,9 +398,25 @@ public class AnomalySystem
         }
     }
 
+    List<Anomaly> entitiesToDisappear = new List<Anomaly> ();
 
-    public void UpdateAnomalyEventLoop(PlayerInput input, bool isInside, float clockTimer, float totalGameDuration, float dt)
+    public void UpdateAnomalyEventLoop(PlayerInput input, Vector3 playerPos, Vector3 lookFwd, bool isInside, float clockTimer, float totalGameDuration, float dt)
     {
+        //for (int i = entitiesToDisappear.Count - 1; i >= 0; i--)
+        //{
+        //    Anomaly a = entitiesToDisappear[i];
+
+        //    if (Time.time >= a.entityTimeSeen + 3.0f)
+        //    {
+        //        GameObject target = a.effect.GetTargetVersion(a.anomaly_obj);
+        //        if (target != null)
+        //            target.SetActive(false);
+
+        //        entitiesToDisappear.RemoveAt(i);
+        //    }
+        //}
+
+
         timer += dt;
         if (timer >= gracePeriodDuration)
         {
@@ -431,6 +444,26 @@ public class AnomalySystem
             {
                 if (isInside)
                 {
+                    //foreach (Anomaly anomaly in active)
+                    //{
+                    //    if (anomaly.anomaly != AnomalyType.UnknownEntity) continue;
+
+                    //    GameObject target = anomaly.effect.GetTargetVersion(anomaly.anomaly_obj);
+                    //    if (target == null) continue;
+
+                    //    Vector3 toTarget = (target.transform.position - playerPos).normalized;
+
+                    //    if (Vector3.Dot(toTarget, lookFwd) >= 0.4f)
+                    //    {
+                    //        bool alreadyTracked = entitiesToDisappear.Any(e => ReferenceEquals(e, anomaly));
+                    //        if (!alreadyTracked)
+                    //        {
+                    //            anomaly.entityTimeSeen = Time.time;
+                    //            entitiesToDisappear.Add(anomaly);
+                    //        }
+                    //    }
+                    //}
+
                     RoomType playerRoom = GetPlayerRoom();
                     int roomAnomalyCount = CountAnomaliesInRoom(playerRoom);
 
@@ -497,7 +530,10 @@ public class AnomalySystem
         }
         active.Clear();
 
+        entitiesToDisappear.Clear();
+
         sanity = 1.0f;
+        gadget.sanityValue.text = (sanity * 100.0f).ToString("0.##");
 
         // Event loop state
         timer = 0f;

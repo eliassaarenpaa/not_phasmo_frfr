@@ -5,7 +5,7 @@ using UnityEngine;
 public class ClockSystem
 {
     public static ClockUI ui;
-    public const float totalGameDuration = 300.0f; // 15 min == 900
+    public const float totalGameDuration = 1000.0f; // 15 min == 900
     public const int startHour = 0;                // 12 AM
     public const int endHour = 6;                  // 6 AM
     public float timer = 0;
