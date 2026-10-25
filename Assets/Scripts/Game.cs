@@ -140,8 +140,15 @@ public static class Game
                     }
                     clockSystem.UpdateUI();
 
+                    if (doorSystem.isPlayerOutside)
+                    {
+                        LampSystem.SetLampActive(!AnomalySystem.trigger.isPlayerOnTrigger);
+                    }
+                    else
+                    {
+                        LampSystem.SetLampActive(anomalySystem.isGracePeriodEnded);
+                    }
 
-                    LampSystem.SetLampActive(!AnomalySystem.trigger.isPlayerOnTrigger);
 
                     if (anomalySystem.isWaitingForResult)
                     {

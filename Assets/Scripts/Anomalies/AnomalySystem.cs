@@ -68,7 +68,7 @@ public class AnomalySystem
     bool gotResult = false;
     public bool isReporting = false;
     public bool isWaitingForResult = false;
-    bool isGracePeriodEnded = false;
+    public bool isGracePeriodEnded = false;
     float reportTime;
     float timer;
     float timeAtNextAnomaly;
