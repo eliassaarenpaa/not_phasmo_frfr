@@ -31,7 +31,7 @@ public class PlayerSystem
 
         Vector3 groundNormal = Vector3.up;
         if (grounded) groundNormal = hit.normal;
-        Debug.Log(groundNormal);
+        //Debug.Log(groundNormal);
 
         Vector3 n = groundNormal.sqrMagnitude > 0.001f ? groundNormal.normalized : Vector3.up;
 

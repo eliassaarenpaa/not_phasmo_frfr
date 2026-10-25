@@ -6,6 +6,10 @@ using UnityEngine;
 [Serializable]
 public struct AnomalyEffect
 {
+
+
+
+
     public AnomalyType type;
     public AnomalyEffectType effect;
 
@@ -64,11 +68,49 @@ public class AnomalyObject : MonoBehaviour
 
 
 
+    [Serializable]
+    public struct AnomalyTypeWeight
+    {
+        public AnomalyType type;
+        [Min(0f)] public float weight;
+    }
+
+
+    int CountOfType(AnomalyType t)
+    {
+        int c = 0;
+        for (int i = 0; i < effects.Count; i++)
+            if (effects[i].type == t) c++;
+        return c;
+    }
+
     public List<AnomalyEffect> effects = new List<AnomalyEffect>();
 
     public AnomalyEffect GetRandomEffect()
     {
-        return effects[UnityEngine.Random.Range(0, effects.Count)];
+        float total = 0f;
+        float[] w = new float[effects.Count];
+
+        for (int i = 0; i < effects.Count; i++)
+        {
+            AnomalyType t = effects[i].type;
+            w[i] = AnomalySystem.GetTypeWeight(t) / Mathf.Max(1, CountOfType(t));
+            total += w[i];
+        }
+
+        if (total <= 0f)
+            return effects[UnityEngine.Random.Range(0, effects.Count)];
+
+        float roll = UnityEngine.Random.Range(0f, total);
+        float cumulative = 0f;
+
+        for (int i = 0; i < effects.Count; i++)
+        {
+            cumulative += w[i];
+            if (roll < cumulative) return effects[i];
+        }
+
+        return effects[effects.Count - 1];
     }
 
     void OnEnable() => AnomalySystem.Register(this);

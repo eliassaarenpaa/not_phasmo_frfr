@@ -7,8 +7,10 @@ using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Assertions;
 using UnityEngine.UI;
+using static AnomalyObject;
 using Debug = UnityEngine.Debug;
 
+enum ThreatLevel { None, Low, High, Extreme }
 public enum AnomalyEffectType
 {
     None,
@@ -56,24 +58,42 @@ public struct Anomaly : IEquatable<Anomaly>
 
 public class AnomalySystem
 {
+    public const int maxUnreportedAnomalies = 10;
+    public const float gracePeriodDuration = 30.0f;
+
     bool gotResult = false;
     public bool isReporting = false;
     public bool isWaitingForResult = false;
+    bool isGracePeriodEnded = false;
     float reportTime;
-    bool isActive = false;
     float timer;
     float timeAtNextAnomaly;
     float intensity;
-    List<Anomaly> active = new List<Anomaly>();
-
+    public List<Anomaly> active = new List<Anomaly>();
 
     static List<AnomalyObject> objects = new List<AnomalyObject>();
-
 
     public static AnomalyUI ui = null;
     public static AnomalyReportTrigger trigger = null;
     RoomType selectedRoom = RoomType.None;
     AnomalyType selectedType = AnomalyType.None;
+
+    public static List<AnomalyTypeWeight> typeWeights = new List<AnomalyTypeWeight>
+{
+    new AnomalyTypeWeight { type = AnomalyType.ObjectChanged,         weight = 30f },
+    new AnomalyTypeWeight { type = AnomalyType.ObjectMoved,           weight = 30f },
+    new AnomalyTypeWeight { type = AnomalyType.ObjectRemoved,         weight = 25f },
+    new AnomalyTypeWeight { type = AnomalyType.UnknownEntity,         weight = 10f },
+    new AnomalyTypeWeight { type = AnomalyType.ElectricalDisturbance, weight = 5f  },
+};
+
+    public static float GetTypeWeight(AnomalyType t)
+    {
+        for (int i = 0; i < typeWeights.Count; i++)
+            if (typeWeights[i].type == t) return typeWeights[i].weight;
+        return 0f;
+    }
+
 
     public static void Register(AnomalyUI _ui)
     {
@@ -98,20 +118,7 @@ public class AnomalySystem
 
     float GetTimeAtNextAnomaly()
     {
-        return Time.time + Mathf.Max(UnityEngine.Random.Range(3.0f, 5.0f) - intensity, 3.0f);
-    }
-
-    public void BeginAnomalies()
-    {
-        timer = Time.time;
-        isActive = true;
-        timeAtNextAnomaly = GetTimeAtNextAnomaly();
-    }
-
-    public void EndAnomalies()
-    {
-        isActive = false;
-        active.Clear();
+        return Time.time + Mathf.Lerp(UnityEngine.Random.Range(60.0f, 120.0f), UnityEngine.Random.Range(15.0f, 30.0f), intensity);
     }
 
     private static T GetRandomEnum<T>() where T : Enum
@@ -144,8 +151,6 @@ public class AnomalySystem
             UnityEngine.Random.Range(-max_offset, max_offset)
             );
     }
-
-   
 
     public void DoAnomaly()
     {
@@ -213,19 +218,9 @@ public class AnomalySystem
         ui.reportScreen.SetActive(type == AnomalyScreenType.ReportScreen);
     }
 
-    public void Update(PlayerInput input, float dt)
+    public void UpdateReportUI(PlayerInput input)
     {
-        if (!isActive || !ui)
-            return;
-
-        timer += dt;
-        intensity += 0.1f * dt;
-
-        if (Time.time >= timeAtNextAnomaly)
-        {
-            DoAnomaly();
-            timeAtNextAnomaly = GetTimeAtNextAnomaly();
-        }
+        if (!ui) return;
 
         if (trigger.isPlayerOnTrigger)
         {
@@ -330,6 +325,52 @@ public class AnomalySystem
                 SetActiveScreen(AnomalyScreenType.SelectRoomScreen);
                 isWaitingForResult = false;
                 gotResult = false;
+            }
+        }
+    }
+
+
+    public void UpdateAnomalyEventLoop(PlayerInput input, float gameEndTime, float dt)
+    {
+        timer += dt;
+
+        if (timer >= gracePeriodDuration)
+        {
+            if (!isGracePeriodEnded)
+            {
+                Debug.Log("GRACE PERIOD HAS ENDED");
+
+                // TODO: turn off lights etc
+                timeAtNextAnomaly = GetTimeAtNextAnomaly();
+                isGracePeriodEnded = true;
+            }
+
+            if (Time.time >= timeAtNextAnomaly)
+            {
+                DoAnomaly();
+                timeAtNextAnomaly = GetTimeAtNextAnomaly();
+            }
+
+            float intensitySpeed = 1.0f / gameEndTime; // intensity == 1 when game is over
+            intensity += Mathf.Min(1f, intensity + dt / gameEndTime); // increases linearly to 1
+            Debug.Log(intensity);
+
+            if (active.Count > 0)
+            {
+                float ratio = (float)maxUnreportedAnomalies / active.Count;
+
+                if (ratio >= 3f / 4f)
+                {
+                    Debug.Log("THREAT LEVEL EXTREME");
+                }
+                else if (ratio >= 1f / 2f)
+                {
+                    Debug.Log("THREAT LEVEL HIGH");
+                }
+                else
+                {
+                    Debug.Log("THREAT LEVEL LOW");
+                }
             }
         }
     }

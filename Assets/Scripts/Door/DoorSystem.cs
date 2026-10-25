@@ -7,12 +7,14 @@ public class DoorSystem
 {
     public bool isPlayerOutside = true;
 
-
     static List<DoorTeleporter> doorTPs = new List<DoorTeleporter>();
+
+    public int numTimesEnteredDoor = 0;
 
     public bool isEnterDoor;
     public bool isPlayerOnDoorTrigger;
     public Transform doorExitTransform;
+
 
     public static void Register(DoorTeleporter tp)
     {
@@ -44,6 +46,7 @@ public class DoorSystem
                 isPlayerOutside = door.isInside; // interacting with inside door == going outside
                 isEnterDoor = true;
                 doorExitTransform = door.exit.transform;
+                numTimesEnteredDoor++;
             }
         }
 
