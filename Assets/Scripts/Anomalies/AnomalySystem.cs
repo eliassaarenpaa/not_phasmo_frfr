@@ -266,6 +266,8 @@ public class AnomalySystem
             a.effect.Revert(o);
 
             active.RemoveAt(idx);
+
+            sanity = Mathf.Clamp01(sanity + 0.5f);
         }
 
         Debug.Log(correct ? "CORRECT" : "INCORRECT");
@@ -410,8 +412,9 @@ public class AnomalySystem
                 Debug.Log("GRACE PERIOD HAS ENDED");
 
                 lights.gameObject.SetActive(false);
+                lights.shutdownSource.Play();
 
-                timeAtNextAnomaly = GetTimeAtNextAnomaly();
+                timeAtNextAnomaly = Time.time + 10.0f;
                 isGracePeriodEnded = true;
             }
 
@@ -424,54 +427,64 @@ public class AnomalySystem
             intensity = Mathf.Clamp01(intensity + dt / totalGameDuration);
             //Debug.Log(intensity);
 
-            if (active.Count > 0)
+            if (isGracePeriodEnded)
             {
-                RoomType playerRoom = GetPlayerRoom();
-                int roomCount = CountAnomaliesInRoom(playerRoom);
-
                 if (isInside)
                 {
-                    sanity = Mathf.Clamp01(sanity - roomCount * 0.005f * dt);
+                    RoomType playerRoom = GetPlayerRoom();
+                    int roomAnomalyCount = CountAnomaliesInRoom(playerRoom);
+
+                    if(roomAnomalyCount > 0)
+                    {
+                        sanity = Mathf.Clamp01(sanity - roomAnomalyCount * 0.005f * dt);
+                    }
+                    else
+                    {
+                        sanity = Mathf.Clamp01(sanity - 0.005f * dt);
+                    }
+
+                    ThreatLevel newLevel =
+                        roomAnomalyCount >= 3 ? ThreatLevel.EXTREME :
+                        roomAnomalyCount == 2 ? ThreatLevel.HIGH :
+                        roomAnomalyCount == 1 ? ThreatLevel.LOW :
+                                           ThreatLevel.NONE;
+
+                    if (newLevel != threat)
+                    {
+                        threat = newLevel;
+                        Debug.Log($"THREAT LEVEL {threat.ToString().ToUpper()} (room: {playerRoom}, anomalies: {roomAnomalyCount})");
+                    }
+
+                    //         float ratio = active.Count / (float)maxUnreportedAnomalies;
+                    //         //Debug.Log(active.Count);
+
+                    //         ThreatLevel newLevel =
+                    //ratio >= 3f / 4f ? ThreatLevel.EXTREME :
+                    //ratio >= 1f / 2f ? ThreatLevel.HIGH :
+                    //ratio > 0f ? ThreatLevel.LOW :
+                    //                   ThreatLevel.NONE;
+
+                    //         if (newLevel != threat)
+                    //         {
+                    //             threat = newLevel;
+                    //             Debug.Log($"THREAT LEVEL {threat.ToString().ToUpper()}");
+                    //         }
                 }
-                else
+                else // if outside
                 {
-                    sanity = Mathf.Clamp01(sanity + 0.03f * dt);
+                    threat = ThreatLevel.NONE;
+                    sanity = Mathf.Clamp01(sanity - 0.005f * dt);
                 }
-
-                gadget.sanityValue.text = (sanity*100.0f).ToString("0.##");
-
-                //float ratio = roomCount / (float)maxAnomaliesPerRoom;
-
-                ThreatLevel newLevel =
-                    roomCount >= 3 ? ThreatLevel.EXTREME :
-                    roomCount == 2 ? ThreatLevel.HIGH :
-                    roomCount == 1 ? ThreatLevel.LOW :
-                                       ThreatLevel.NONE;
-
-                if (newLevel != threat)
-                {
-                    threat = newLevel;
-                    Debug.Log($"THREAT LEVEL {threat.ToString().ToUpper()} (room: {playerRoom}, anomalies: {roomCount})");
-                }
-
-                //         float ratio = active.Count / (float)maxUnreportedAnomalies;
-                //         //Debug.Log(active.Count);
-
-                //         ThreatLevel newLevel =
-                //ratio >= 3f / 4f ? ThreatLevel.EXTREME :
-                //ratio >= 1f / 2f ? ThreatLevel.HIGH :
-                //ratio > 0f ? ThreatLevel.LOW :
-                //                   ThreatLevel.NONE;
-
-                //         if (newLevel != threat)
-                //         {
-                //             threat = newLevel;
-                //             Debug.Log($"THREAT LEVEL {threat.ToString().ToUpper()}");
-                //         }
             }
+
+           
+            
+            
+      
         }
 
         gadget.treathValue.text = threat.ToString();
+        gadget.sanityValue.text = (sanity * 100.0f).ToString("0.##");
     }
 
     public void Reset()
@@ -492,7 +505,7 @@ public class AnomalySystem
         intensity = 0f;
         isGracePeriodEnded = false;
         threat = ThreatLevel.NONE;
-        if(lights) lights.gameObject.SetActive(true);
+        if (lights) lights.gameObject.SetActive(true);
         if (gadget) gadget.treathValue.text = ThreatLevel.NONE.ToString();
 
         // Report flow state
