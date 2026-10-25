@@ -10,6 +10,11 @@ public class PlayerSystem
     float nextFootstepTime;
     Vector3 lastFootstepPos;
 
+    public void Reset()
+    {
+        PlayerSystem.player.transform.position = PlayerSystem.player.spawnTransform.position;
+    }
+
     public static void Register(Player p)
     {
         player = p;

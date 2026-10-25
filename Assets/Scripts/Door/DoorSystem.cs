@@ -51,4 +51,17 @@ public class DoorSystem
         }
 
     }
+
+
+    public void Reset()
+    {
+        isPlayerOutside = true;
+        numTimesEnteredDoor = 0;
+
+        isEnterDoor = false;
+        isPlayerOnDoorTrigger = false;
+        doorExitTransform = null;
+    }
+
+
 }

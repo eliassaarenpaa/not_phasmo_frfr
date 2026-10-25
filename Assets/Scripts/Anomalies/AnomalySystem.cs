@@ -333,10 +333,9 @@ public class AnomalySystem
     }
 
 
-    public void UpdateAnomalyEventLoop(PlayerInput input, float gameEndTime, float dt)
+    public void UpdateAnomalyEventLoop(PlayerInput input, float clockTimer, float totalGameDuration, float dt)
     {
         timer += dt;
-
         if (timer >= gracePeriodDuration)
         {
             if (!isGracePeriodEnded)
@@ -354,9 +353,8 @@ public class AnomalySystem
                 timeAtNextAnomaly = GetTimeAtNextAnomaly();
             }
 
-            intensity += Mathf.Max(1f, intensity + dt * (1.0f/gameEndTime)); // increases linearly to 1
+            intensity = Mathf.Clamp01(intensity + dt / totalGameDuration);
             Debug.Log(intensity);
-
 
 
             if (active.Count > 0)
@@ -378,5 +376,45 @@ public class AnomalySystem
             }
         }
     }
+
+    public void Reset()
+    {
+        // Undo any anomalies that are still applied to the world
+        foreach (Anomaly a in active)
+        {
+            if (a.anomaly_obj != null)
+                a.effect.Revert(a.anomaly_obj);
+        }
+        active.Clear();
+
+        // Event loop state
+        timer = 0f;
+        timeAtNextAnomaly = 0f;
+        intensity = 0f;
+        isGracePeriodEnded = false;
+        threat = ThreatLevel.None;
+
+        // Report flow state
+        isReporting = false;
+        isWaitingForResult = false;
+        gotResult = false;
+        reportTime = 0f;
+        selectedRoom = RoomType.None;
+        selectedType = AnomalyType.None;
+
+        // Put the UI back on its initial screen
+        if (ui)
+        {
+            SetActiveScreen(AnomalyScreenType.SelectRoomScreen);
+            ui.reportButton.tmpro.text = "< REPORT >";
+            ui.reportButton.clicked = false;
+
+            foreach (var b in ui.roomButtons) b.clicked = false;
+            foreach (var b in ui.typeButtons) b.clicked = false;
+            foreach (var b in ui.nextButtons) b.clicked = false;
+        }
+    }
+
+
 
 }

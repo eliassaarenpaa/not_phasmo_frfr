@@ -8,11 +8,11 @@ public class ClockSystem
     public const float totalGameDuration = 60.0f; // 15 min == 900
     public const int startHour = 0;                // 12 AM
     public const int endHour = 6;                  // 6 AM
-    public float timer;
+    public float timer = 0;
 
     int lastDisplayedMinutes = -1;
 
-    public void StartTimer()
+    public void Reset()
     {
         timer = 0;
         lastDisplayedMinutes = -1;
