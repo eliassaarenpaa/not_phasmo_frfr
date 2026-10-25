@@ -12,6 +12,12 @@ public class ClockSystem
 
     int lastDisplayedMinutes = -1;
 
+    public static Gadget gadget;
+    public static void Register(Gadget g)
+    {
+        gadget = g;
+    }
+
     public void Reset()
     {
         timer = 0;
@@ -36,7 +42,9 @@ public class ClockSystem
         int minute = totalMinutes % 60;
         int displayHour = hour == 0 ? 12 : hour; // 0 shows as 12 AM
 
-        ui.tmpro.text = string.Format("{0}:{1:00} AM", displayHour, minute);
+        string clockText = string.Format("{0}:{1:00} AM", displayHour, minute);
+        ui.tmpro.text = clockText;
+        gadget.clockValue.text = clockText;
     }
 
     public static void Register(ClockUI _ui)
