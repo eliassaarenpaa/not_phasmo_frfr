@@ -8,6 +8,8 @@ public class Gadget : MonoBehaviour
     public AudioSource beepSource;
     public TextMeshProUGUI clockValue;
     public TextMeshProUGUI treathValue;
+    public TextMeshProUGUI sanityValue;
+
 
     private void OnEnable()
     {

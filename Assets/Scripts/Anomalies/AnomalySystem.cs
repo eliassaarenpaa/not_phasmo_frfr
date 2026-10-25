@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO.Ports;
 using System.Linq;
 using UnityEditor.Rendering;
 using UnityEngine;
@@ -72,6 +73,7 @@ public class AnomalySystem
     float timer;
     float timeAtNextAnomaly;
     float intensity;
+    public float sanity = 1.0f;
     public List<Anomaly> active = new List<Anomaly>();
 
     static List<AnomalyObject> objects = new List<AnomalyObject>();
@@ -398,7 +400,7 @@ public class AnomalySystem
     }
 
 
-    public void UpdateAnomalyEventLoop(PlayerInput input, float clockTimer, float totalGameDuration, float dt)
+    public void UpdateAnomalyEventLoop(PlayerInput input, bool isInside, float clockTimer, float totalGameDuration, float dt)
     {
         timer += dt;
         if (timer >= gracePeriodDuration)
@@ -422,12 +424,21 @@ public class AnomalySystem
             intensity = Mathf.Clamp01(intensity + dt / totalGameDuration);
             //Debug.Log(intensity);
 
-
             if (active.Count > 0)
             {
-
                 RoomType playerRoom = GetPlayerRoom();
                 int roomCount = CountAnomaliesInRoom(playerRoom);
+
+                if (isInside)
+                {
+                    sanity = Mathf.Clamp01(sanity - roomCount * 0.005f * dt);
+                }
+                else
+                {
+                    sanity = Mathf.Clamp01(sanity + 0.03f * dt);
+                }
+
+                gadget.sanityValue.text = (sanity*100.0f).ToString("0.##");
 
                 //float ratio = roomCount / (float)maxAnomaliesPerRoom;
 
@@ -472,6 +483,8 @@ public class AnomalySystem
                 a.effect.Revert(a.anomaly_obj);
         }
         active.Clear();
+
+        sanity = 1.0f;
 
         // Event loop state
         timer = 0f;

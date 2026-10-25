@@ -108,16 +108,14 @@ public static class Game
                     {
                         if (!gameWon)
                         {
-                            // WIN GAME????
                             gameWon = true;
                         }
 
                         return;
                     }
 
-                    if (anomalySystem.active.Count >= AnomalySystem.maxUnreportedAnomalies)
+                    if (anomalySystem.sanity <= 0.0001f)
                     {
-                        // Lose game??
                         if (!gameLost)
                         {
                             gameLost = true;
@@ -138,7 +136,7 @@ public static class Game
                     if (doorSystem.numTimesEnteredDoor > 0)
                     {
                         clockSystem.UpdateTimer(dt);
-                        anomalySystem.UpdateAnomalyEventLoop(input, clockSystem.timer, ClockSystem.totalGameDuration, dt);
+                        anomalySystem.UpdateAnomalyEventLoop(input, !doorSystem.isPlayerOutside, clockSystem.timer, ClockSystem.totalGameDuration, dt);
                     }
                     clockSystem.UpdateUI();
 
