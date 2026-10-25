@@ -56,6 +56,9 @@ public static class Game
         doorSystem.Reset();
         gameWon = false;
         gameLost = false;
+        GameFlowSystem.flow.exterior.gameObject.SetActive(true);
+        GameFlowSystem.flow.interior.gameObject.SetActive(false);
+        GameFlowSystem.flow.exterior.transform.position = new Vector3(0, 0, 0);
     }
 
     public static void FrameUpdate(float dt)
@@ -70,6 +73,7 @@ public static class Game
                 case GameState.Menu:
                     GameFlowSystem.flow.world.gameObject.SetActive(false);
                     GameFlowSystem.flow.menu.gameObject.SetActive(true);
+                    menuSystem.SetScreen(MenuScreen.MainMenu);
                     break;
                 case GameState.Playing:
                     GameFlowSystem.flow.world.gameObject.SetActive(true);
@@ -79,10 +83,12 @@ public static class Game
                 case GameState.Win:
                     GameFlowSystem.flow.world.gameObject.SetActive(false);
                     GameFlowSystem.flow.menu.gameObject.SetActive(true);
+                    menuSystem.SetScreen(MenuScreen.WinMenu);
                     break;
                 case GameState.Lose:
                     GameFlowSystem.flow.world.gameObject.SetActive(false);
                     GameFlowSystem.flow.menu.gameObject.SetActive(true);
+                    menuSystem.SetScreen(MenuScreen.LoseMenu);
                     break;
             }
         }
@@ -90,12 +96,13 @@ public static class Game
         switch (gameFlowSystem.state)
         {
             case GameState.Menu:
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
                 break;
             case GameState.Playing:
                 {
                     if (!PlayerSystem.player || !CameraSystem.camera) return;
 
-                    clockSystem.UpdateUI();
 
                     if (clockSystem.timer >= ClockSystem.totalGameDuration)
                     {
@@ -133,6 +140,7 @@ public static class Game
                         clockSystem.UpdateTimer(dt);
                         anomalySystem.UpdateAnomalyEventLoop(input, clockSystem.timer, ClockSystem.totalGameDuration, dt);
                     }
+                    clockSystem.UpdateUI();
 
 
                     LampSystem.SetLampActive(!AnomalySystem.trigger.isPlayerOnTrigger);
@@ -190,7 +198,6 @@ public static class Game
                 }
                 break;
             case GameState.Win:
-                break;
             case GameState.Lose:
                 break;
         }

@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UIElements;
 
 public struct PlayerInput
 {
@@ -28,8 +29,8 @@ public class PlayerInputSystem
         input.mouseDx = Input.GetAxisRaw("Mouse X");
         input.mouseDy = Input.GetAxisRaw("Mouse Y");
 
-        input.isInteract = Input.GetKeyDown(KeyCode.E);
-        input.isBack = Input.GetKeyDown(KeyCode.Escape);
+        input.isInteract = Input.GetMouseButtonDown(0);
+        input.isBack = Input.GetMouseButtonDown(1);
 
         return input;
     }

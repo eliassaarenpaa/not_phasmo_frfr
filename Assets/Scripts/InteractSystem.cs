@@ -22,15 +22,15 @@ public class InteractSystem
 
         if (isOnDoor)
         {
-            ui.tmpro.text = "Open Door (E)";
+            ui.tmpro.text = "Open Door (Left Mouse)";
         }
         if (isOnReport && !isReporting)
         {
-            ui.tmpro.text = "Report Anomaly (E)";
+            ui.tmpro.text = "Report Anomaly (Left Mouse)";
         }
         if (isReporting && !isWaitingForResult)
         {
-            ui.tmpro.text = "Return (Esc)";
+            ui.tmpro.text = "Return (Right Mouse)";
         }
 
     }

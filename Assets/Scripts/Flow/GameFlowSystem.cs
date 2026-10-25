@@ -18,6 +18,8 @@ public class GameFlowSystem
     {
         flow = f;
     }
+    float timeOnEndEnter;
+
 
     public bool UpdateState(bool isPlay, bool isWin, bool isLose)
     {
@@ -36,7 +38,11 @@ public class GameFlowSystem
 
             case GameState.Win:
             case GameState.Lose:
-                if (isPlay) return ChangeState(GameState.Playing); // restart
+                const float delayToMenu = 3.0f;
+                if (Time.time >= timeOnEndEnter + delayToMenu)
+                {
+                    return ChangeState(GameState.Menu);
+                }
                 break;
         }
         return false;
@@ -47,6 +53,8 @@ public class GameFlowSystem
         if (state == next) return false;
         state = next;
 
+        Debug.Log($"{state} -> {next} at {Time.time}");
+
         switch (next)
         {
             case GameState.Menu:
@@ -56,9 +64,8 @@ public class GameFlowSystem
                 break;
 
             case GameState.Win:
-                break;
-
             case GameState.Lose:
+                timeOnEndEnter = Time.time;
                 break;
         }
 
