@@ -15346,6 +15346,10 @@ PrefabInstance:
       propertyPath: m_text
       value: NONE
       objectReference: {fileID: 0}
+    - target: {fileID: 884986088, guid: 19d5b02ef8450824abc0ecf8d2ddf039, type: 3}
+      propertyPath: m_Enabled
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8508146406686966521, guid: 19d5b02ef8450824abc0ecf8d2ddf039,
         type: 3}
       propertyPath: m_Name
@@ -28392,7 +28396,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 1
   m_VolumeTrigger: {fileID: 0}
-  m_RenderPostProcessing: 1
+  m_RenderPostProcessing: 0
   m_Antialiasing: 1
   m_AntialiasingQuality: 2
   m_StopNaN: 0
@@ -54361,6 +54365,16 @@ PrefabInstance:
     - target: {fileID: 5712111107248350150, guid: c0e9bb93c9625194d9d29817f0e9be6c,
         type: 3}
       propertyPath: Loop
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7561869557400801527, guid: c0e9bb93c9625194d9d29817f0e9be6c,
+        type: 3}
+      propertyPath: m_Volume
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 7561869557400801527, guid: c0e9bb93c9625194d9d29817f0e9be6c,
+        type: 3}
+      propertyPath: panLevelCustomCurve.m_Curve.Array.data[0].value
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7762885132548806342, guid: c0e9bb93c9625194d9d29817f0e9be6c,

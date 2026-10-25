@@ -60,7 +60,7 @@ public class AnomalySystem
 {
     ThreatLevel threat;
     public const int maxUnreportedAnomalies = 10;
-    public const float gracePeriodDuration = 1.0f;
+    public const float gracePeriodDuration = 10.0f;
 
     bool gotResult = false;
     public bool isReporting = false;
@@ -377,8 +377,8 @@ public class AnomalySystem
 
             if (active.Count > 0)
             {
-                float ratio = (float)maxUnreportedAnomalies / active.Count;
-                Debug.Log(active.Count);
+                float ratio = active.Count / (float)maxUnreportedAnomalies;
+                //Debug.Log(active.Count);
 
                 ThreatLevel newLevel =
        ratio >= 3f / 4f ? ThreatLevel.EXTREME :
