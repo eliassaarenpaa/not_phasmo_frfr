@@ -11,6 +11,7 @@ public static class Game
     static AnomalySystem anomalySystem;
     static DoorSystem doorSystem;
     static InteractSystem interactSystem;
+    static ClockSystem clockSystem;
 
     // Once before the first scene loads (before any Awake)
     public static void Init()
@@ -20,11 +21,12 @@ public static class Game
         cameraSystem = new CameraSystem();
         lampSystem = new LampSystem();
         anomalySystem = new AnomalySystem();
-        anomalySystem.BeginAnomalies();
         doorSystem = new DoorSystem();
         interactSystem = new InteractSystem();
+        clockSystem = new ClockSystem();
 
         Debug.Log("init");
+        clockSystem.StartTimer();
     }
 
     // Once on quit / exiting play mode
@@ -34,13 +36,34 @@ public static class Game
     }
 
     // On every frame after Update.ScriptRunBehaviourUpdate
+
     public static void FrameUpdate(float dt)
     {
         if (!PlayerSystem.player || !CameraSystem.camera) return;
 
+        clockSystem.UpdateTimer(dt);
+        clockSystem.UpdateUI();
+
+        if (clockSystem.timer <= 0)
+        {
+            // WIN GAME????
+            return;
+        }
+
+        if (anomalySystem.active.Count >= AnomalySystem.maxUnreportedAnomalies)
+        {
+            // Lose game??
+        }
+
         PlayerInput input = playerInputSystem.ReadInputs();
 
-        anomalySystem.Update(input, dt);
+        anomalySystem.UpdateReportUI(input);
+
+        // Only update anomalies after first time entered house
+        if (doorSystem.numTimesEnteredDoor > 0)
+        {
+            anomalySystem.UpdateAnomalyEventLoop(input, ClockSystem.totalGameDuration, dt);
+        }
 
         LampSystem.SetLampActive(!AnomalySystem.trigger.isPlayerOnTrigger);
 
@@ -90,8 +113,7 @@ public static class Game
 
         Vector3 fwd = CameraSystem.camera.transform.forward;
         Vector3 right = CameraSystem.camera.transform.right;
-        Vector3 groundNormal = Vector3.up;
-       
+
         playerSystem.Move(input, fwd, right, dt);
 
         interactSystem.Update(doorSystem.isPlayerOnDoorTrigger, AnomalySystem.trigger.isPlayerOnTrigger, anomalySystem.isReporting, anomalySystem.isWaitingForResult);
