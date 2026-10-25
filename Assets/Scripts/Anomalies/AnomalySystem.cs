@@ -75,6 +75,7 @@ public class AnomalySystem
     static List<AnomalyObject> objects = new List<AnomalyObject>();
 
     public static AnomalyUI ui = null;
+    public static AnomalyGracePeriodLights lights = null;
     public static AnomalyReportTrigger trigger = null;
     RoomType selectedRoom = RoomType.None;
     AnomalyType selectedType = AnomalyType.None;
@@ -99,6 +100,11 @@ public class AnomalySystem
     public static void Register(AnomalyUI _ui)
     {
         ui = _ui;
+    }
+
+    public static void Register(AnomalyGracePeriodLights _lights)
+    {
+        lights = _lights;
     }
 
     public static void Register(AnomalyReportTrigger t)
@@ -342,7 +348,8 @@ public class AnomalySystem
             {
                 Debug.Log("GRACE PERIOD HAS ENDED");
 
-                // TODO: turn off lights etc
+                lights.gameObject.SetActive(false);
+
                 timeAtNextAnomaly = GetTimeAtNextAnomaly();
                 isGracePeriodEnded = true;
             }
@@ -354,7 +361,7 @@ public class AnomalySystem
             }
 
             intensity = Mathf.Clamp01(intensity + dt / totalGameDuration);
-            Debug.Log(intensity);
+            //Debug.Log(intensity);
 
 
             if (active.Count > 0)
@@ -393,6 +400,7 @@ public class AnomalySystem
         intensity = 0f;
         isGracePeriodEnded = false;
         threat = ThreatLevel.None;
+        if(lights) lights.gameObject.SetActive(true);
 
         // Report flow state
         isReporting = false;
