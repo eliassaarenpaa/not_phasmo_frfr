@@ -58,8 +58,9 @@ public struct Anomaly : IEquatable<Anomaly>
 
 public class AnomalySystem
 {
+    ThreatLevel threat;
     public const int maxUnreportedAnomalies = 10;
-    public const float gracePeriodDuration = 30.0f;
+    public const float gracePeriodDuration = 1.0f;
 
     bool gotResult = false;
     public bool isReporting = false;
@@ -118,7 +119,9 @@ public class AnomalySystem
 
     float GetTimeAtNextAnomaly()
     {
-        return Time.time + Mathf.Lerp(UnityEngine.Random.Range(60.0f, 120.0f), UnityEngine.Random.Range(15.0f, 30.0f), intensity);
+        return Time.time + Mathf.Lerp(UnityEngine.Random.Range(5.0f, 5.0f), UnityEngine.Random.Range(5.0f, 5.0f), intensity);
+
+        //return Time.time + Mathf.Lerp(UnityEngine.Random.Range(60.0f, 120.0f), UnityEngine.Random.Range(15.0f, 30.0f), intensity);
     }
 
     private static T GetRandomEnum<T>() where T : Enum
@@ -351,25 +354,26 @@ public class AnomalySystem
                 timeAtNextAnomaly = GetTimeAtNextAnomaly();
             }
 
-            float intensitySpeed = 1.0f / gameEndTime; // intensity == 1 when game is over
-            intensity += Mathf.Min(1f, intensity + dt / gameEndTime); // increases linearly to 1
+            intensity += Mathf.Max(1f, intensity + dt * (1.0f/gameEndTime)); // increases linearly to 1
             Debug.Log(intensity);
+
+
 
             if (active.Count > 0)
             {
                 float ratio = (float)maxUnreportedAnomalies / active.Count;
 
-                if (ratio >= 3f / 4f)
+                ThreatLevel newLevel =
+       ratio >= 3f / 4f ? ThreatLevel.Extreme :
+       ratio >= 1f / 2f ? ThreatLevel.High :
+       ratio > 0f ? ThreatLevel.Low :
+                          ThreatLevel.None;
+
+
+                if (newLevel != threat)
                 {
-                    Debug.Log("THREAT LEVEL EXTREME");
-                }
-                else if (ratio >= 1f / 2f)
-                {
-                    Debug.Log("THREAT LEVEL HIGH");
-                }
-                else
-                {
-                    Debug.Log("THREAT LEVEL LOW");
+                    threat = newLevel;
+                    Debug.Log($"THREAT LEVEL {threat.ToString().ToUpper()}");
                 }
             }
         }

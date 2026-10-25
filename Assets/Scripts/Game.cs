@@ -44,7 +44,7 @@ public static class Game
         clockSystem.UpdateTimer(dt);
         clockSystem.UpdateUI();
 
-        if (clockSystem.timer <= 0)
+        if (clockSystem.timer >= ClockSystem.totalGameDuration)
         {
             // WIN GAME????
             return;
