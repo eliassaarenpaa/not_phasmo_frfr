@@ -60,6 +60,8 @@ public class AnomalySystem
 {
     ThreatLevel threat;
     public const int maxUnreportedAnomalies = 10;
+    public const int maxAnomaliesPerRoom = 3;
+
     public const float gracePeriodDuration = 10.0f;
 
     bool gotResult = false;
@@ -99,6 +101,16 @@ public class AnomalySystem
         return 0f;
     }
 
+    public static List<AnomalyRoomBounds> bounds = new List<AnomalyRoomBounds>();
+    public static void Register(AnomalyRoomBounds b)
+    {
+        bounds.Add(b);
+    }
+    public static void Unregister(AnomalyRoomBounds b)
+    {
+        bounds.Remove(b);
+    }
+
     public static Gadget gadget;
     public static void Register(Gadget g)
     {
@@ -131,6 +143,26 @@ public class AnomalySystem
         objects.Remove(o);
     }
 
+    public static RoomType GetPlayerRoom()
+    {
+        for (int i = 0; i < bounds.Count; i++)
+            if (bounds[i].isPlayerInRoom)
+                return bounds[i].room;
+
+        return RoomType.None;
+    }
+    int CountAnomaliesInRoom(RoomType room)
+    {
+        if (room == RoomType.None) return 0;
+
+        int count = 0;
+        for (int i = 0; i < active.Count; i++)
+            if (active[i].room == room)
+                count++;
+
+        return count;
+    }
+
 
     float GetTimeAtNextAnomaly()
     {
@@ -151,7 +183,8 @@ public class AnomalySystem
             return null;
 
         var candidates = objects
-            .Where(o => !active.Any(a => a.anomaly_obj == o))
+            .Where(o => !active.Any(a => a.anomaly_obj == o))      // not already anomalous
+            .Where(o => CountAnomaliesInRoom(o.room) < maxAnomaliesPerRoom) // room not full
             .ToList();
 
         if (candidates.Count == 0)
@@ -159,6 +192,21 @@ public class AnomalySystem
 
         return candidates[UnityEngine.Random.Range(0, candidates.Count)];
     }
+
+    //public AnomalyObject GetRandomAnomalyObject()
+    //{
+    //    if (objects == null || objects.Count == 0)
+    //        return null;
+
+    //    var candidates = objects
+    //        .Where(o => !active.Any(a => a.anomaly_obj == o))
+    //        .ToList();
+
+    //    if (candidates.Count == 0)
+    //        return null;
+
+    //    return candidates[UnityEngine.Random.Range(0, candidates.Count)];
+    //}
 
     public Vector3 GetRandomPosAround(Vector3 pos)
     {
@@ -377,21 +425,38 @@ public class AnomalySystem
 
             if (active.Count > 0)
             {
-                float ratio = active.Count / (float)maxUnreportedAnomalies;
-                //Debug.Log(active.Count);
+
+                RoomType playerRoom = GetPlayerRoom();
+                int roomCount = CountAnomaliesInRoom(playerRoom);
+
+                //float ratio = roomCount / (float)maxAnomaliesPerRoom;
 
                 ThreatLevel newLevel =
-       ratio >= 3f / 4f ? ThreatLevel.EXTREME :
-       ratio >= 1f / 2f ? ThreatLevel.HIGH :
-       ratio > 0f ? ThreatLevel.LOW :
-                          ThreatLevel.NONE;
-
+                    roomCount >= 3 ? ThreatLevel.EXTREME :
+                    roomCount == 2 ? ThreatLevel.HIGH :
+                    roomCount == 1 ? ThreatLevel.LOW :
+                                       ThreatLevel.NONE;
 
                 if (newLevel != threat)
                 {
                     threat = newLevel;
-                    Debug.Log($"THREAT LEVEL {threat.ToString().ToUpper()}");
+                    Debug.Log($"THREAT LEVEL {threat.ToString().ToUpper()} (room: {playerRoom}, anomalies: {roomCount})");
                 }
+
+                //         float ratio = active.Count / (float)maxUnreportedAnomalies;
+                //         //Debug.Log(active.Count);
+
+                //         ThreatLevel newLevel =
+                //ratio >= 3f / 4f ? ThreatLevel.EXTREME :
+                //ratio >= 1f / 2f ? ThreatLevel.HIGH :
+                //ratio > 0f ? ThreatLevel.LOW :
+                //                   ThreatLevel.NONE;
+
+                //         if (newLevel != threat)
+                //         {
+                //             threat = newLevel;
+                //             Debug.Log($"THREAT LEVEL {threat.ToString().ToUpper()}");
+                //         }
             }
         }
 
