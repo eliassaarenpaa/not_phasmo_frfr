@@ -5,14 +5,20 @@ using UnityEngine;
 public class ClockSystem
 {
     public static ClockUI ui;
-    public const float totalGameDuration = 60.0f; // 15 min == 900
+    public const float totalGameDuration = 300.0f; // 15 min == 900
     public const int startHour = 0;                // 12 AM
     public const int endHour = 6;                  // 6 AM
-    public float timer;
+    public float timer = 0;
 
     int lastDisplayedMinutes = -1;
 
-    public void StartTimer()
+    public static Gadget gadget;
+    public static void Register(Gadget g)
+    {
+        gadget = g;
+    }
+
+    public void Reset()
     {
         timer = 0;
         lastDisplayedMinutes = -1;
@@ -36,7 +42,9 @@ public class ClockSystem
         int minute = totalMinutes % 60;
         int displayHour = hour == 0 ? 12 : hour; // 0 shows as 12 AM
 
-        ui.tmpro.text = string.Format("{0}:{1:00} AM", displayHour, minute);
+        string clockText = string.Format("{0}:{1:00} AM", displayHour, minute);
+        ui.tmpro.text = clockText;
+        gadget.clockValue.text = clockText;
     }
 
     public static void Register(ClockUI _ui)

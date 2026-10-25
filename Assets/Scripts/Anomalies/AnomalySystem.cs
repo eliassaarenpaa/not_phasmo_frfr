@@ -10,7 +10,7 @@ using UnityEngine.UI;
 using static AnomalyObject;
 using Debug = UnityEngine.Debug;
 
-enum ThreatLevel { None, Low, High, Extreme }
+enum ThreatLevel { NONE, LOW, HIGH, EXTREME }
 public enum AnomalyEffectType
 {
     None,
@@ -60,7 +60,9 @@ public class AnomalySystem
 {
     ThreatLevel threat;
     public const int maxUnreportedAnomalies = 10;
-    public const float gracePeriodDuration = 1.0f;
+    public const int maxAnomaliesPerRoom = 3;
+
+    public const float gracePeriodDuration = 10.0f;
 
     bool gotResult = false;
     public bool isReporting = false;
@@ -75,6 +77,7 @@ public class AnomalySystem
     static List<AnomalyObject> objects = new List<AnomalyObject>();
 
     public static AnomalyUI ui = null;
+    public static AnomalyGracePeriodLights lights = null;
     public static AnomalyReportTrigger trigger = null;
     RoomType selectedRoom = RoomType.None;
     AnomalyType selectedType = AnomalyType.None;
@@ -88,6 +91,9 @@ public class AnomalySystem
     new AnomalyTypeWeight { type = AnomalyType.ElectricalDisturbance, weight = 5f  },
 };
 
+
+
+
     public static float GetTypeWeight(AnomalyType t)
     {
         for (int i = 0; i < typeWeights.Count; i++)
@@ -95,10 +101,31 @@ public class AnomalySystem
         return 0f;
     }
 
+    public static List<AnomalyRoomBounds> bounds = new List<AnomalyRoomBounds>();
+    public static void Register(AnomalyRoomBounds b)
+    {
+        bounds.Add(b);
+    }
+    public static void Unregister(AnomalyRoomBounds b)
+    {
+        bounds.Remove(b);
+    }
+
+    public static Gadget gadget;
+    public static void Register(Gadget g)
+    {
+        gadget = g;
+    }
+
 
     public static void Register(AnomalyUI _ui)
     {
         ui = _ui;
+    }
+
+    public static void Register(AnomalyGracePeriodLights _lights)
+    {
+        lights = _lights;
     }
 
     public static void Register(AnomalyReportTrigger t)
@@ -114,6 +141,26 @@ public class AnomalySystem
     public static void Unregister(AnomalyObject o)
     {
         objects.Remove(o);
+    }
+
+    public static RoomType GetPlayerRoom()
+    {
+        for (int i = 0; i < bounds.Count; i++)
+            if (bounds[i].isPlayerInRoom)
+                return bounds[i].room;
+
+        return RoomType.None;
+    }
+    int CountAnomaliesInRoom(RoomType room)
+    {
+        if (room == RoomType.None) return 0;
+
+        int count = 0;
+        for (int i = 0; i < active.Count; i++)
+            if (active[i].room == room)
+                count++;
+
+        return count;
     }
 
 
@@ -136,7 +183,8 @@ public class AnomalySystem
             return null;
 
         var candidates = objects
-            .Where(o => !active.Any(a => a.anomaly_obj == o))
+            .Where(o => !active.Any(a => a.anomaly_obj == o))      // not already anomalous
+            .Where(o => CountAnomaliesInRoom(o.room) < maxAnomaliesPerRoom) // room not full
             .ToList();
 
         if (candidates.Count == 0)
@@ -144,6 +192,21 @@ public class AnomalySystem
 
         return candidates[UnityEngine.Random.Range(0, candidates.Count)];
     }
+
+    //public AnomalyObject GetRandomAnomalyObject()
+    //{
+    //    if (objects == null || objects.Count == 0)
+    //        return null;
+
+    //    var candidates = objects
+    //        .Where(o => !active.Any(a => a.anomaly_obj == o))
+    //        .ToList();
+
+    //    if (candidates.Count == 0)
+    //        return null;
+
+    //    return candidates[UnityEngine.Random.Range(0, candidates.Count)];
+    //}
 
     public Vector3 GetRandomPosAround(Vector3 pos)
     {
@@ -178,6 +241,8 @@ public class AnomalySystem
 
         active.Add(a);
         Debug.Log($"Anomaly started: {a.anomaly} in {a.room}");
+
+        gadget.beepSource.Play();
     }
 
     public bool Report(AnomalyType type, RoomType room)
@@ -333,17 +398,17 @@ public class AnomalySystem
     }
 
 
-    public void UpdateAnomalyEventLoop(PlayerInput input, float gameEndTime, float dt)
+    public void UpdateAnomalyEventLoop(PlayerInput input, float clockTimer, float totalGameDuration, float dt)
     {
         timer += dt;
-
         if (timer >= gracePeriodDuration)
         {
             if (!isGracePeriodEnded)
             {
                 Debug.Log("GRACE PERIOD HAS ENDED");
 
-                // TODO: turn off lights etc
+                lights.gameObject.SetActive(false);
+
                 timeAtNextAnomaly = GetTimeAtNextAnomaly();
                 isGracePeriodEnded = true;
             }
@@ -354,29 +419,90 @@ public class AnomalySystem
                 timeAtNextAnomaly = GetTimeAtNextAnomaly();
             }
 
-            intensity += Mathf.Max(1f, intensity + dt * (1.0f/gameEndTime)); // increases linearly to 1
-            Debug.Log(intensity);
-
+            intensity = Mathf.Clamp01(intensity + dt / totalGameDuration);
+            //Debug.Log(intensity);
 
 
             if (active.Count > 0)
             {
-                float ratio = (float)maxUnreportedAnomalies / active.Count;
+
+                RoomType playerRoom = GetPlayerRoom();
+                int roomCount = CountAnomaliesInRoom(playerRoom);
+
+                //float ratio = roomCount / (float)maxAnomaliesPerRoom;
 
                 ThreatLevel newLevel =
-       ratio >= 3f / 4f ? ThreatLevel.Extreme :
-       ratio >= 1f / 2f ? ThreatLevel.High :
-       ratio > 0f ? ThreatLevel.Low :
-                          ThreatLevel.None;
-
+                    roomCount >= 3 ? ThreatLevel.EXTREME :
+                    roomCount == 2 ? ThreatLevel.HIGH :
+                    roomCount == 1 ? ThreatLevel.LOW :
+                                       ThreatLevel.NONE;
 
                 if (newLevel != threat)
                 {
                     threat = newLevel;
-                    Debug.Log($"THREAT LEVEL {threat.ToString().ToUpper()}");
+                    Debug.Log($"THREAT LEVEL {threat.ToString().ToUpper()} (room: {playerRoom}, anomalies: {roomCount})");
                 }
+
+                //         float ratio = active.Count / (float)maxUnreportedAnomalies;
+                //         //Debug.Log(active.Count);
+
+                //         ThreatLevel newLevel =
+                //ratio >= 3f / 4f ? ThreatLevel.EXTREME :
+                //ratio >= 1f / 2f ? ThreatLevel.HIGH :
+                //ratio > 0f ? ThreatLevel.LOW :
+                //                   ThreatLevel.NONE;
+
+                //         if (newLevel != threat)
+                //         {
+                //             threat = newLevel;
+                //             Debug.Log($"THREAT LEVEL {threat.ToString().ToUpper()}");
+                //         }
             }
         }
+
+        gadget.treathValue.text = threat.ToString();
     }
+
+    public void Reset()
+    {
+        // Undo any anomalies that are still applied to the world
+        foreach (Anomaly a in active)
+        {
+            if (a.anomaly_obj != null)
+                a.effect.Revert(a.anomaly_obj);
+        }
+        active.Clear();
+
+        // Event loop state
+        timer = 0f;
+        timeAtNextAnomaly = 0f;
+        intensity = 0f;
+        isGracePeriodEnded = false;
+        threat = ThreatLevel.NONE;
+        if(lights) lights.gameObject.SetActive(true);
+        if (gadget) gadget.treathValue.text = ThreatLevel.NONE.ToString();
+
+        // Report flow state
+        isReporting = false;
+        isWaitingForResult = false;
+        gotResult = false;
+        reportTime = 0f;
+        selectedRoom = RoomType.None;
+        selectedType = AnomalyType.None;
+
+        // Put the UI back on its initial screen
+        if (ui)
+        {
+            SetActiveScreen(AnomalyScreenType.SelectRoomScreen);
+            ui.reportButton.tmpro.text = "< REPORT >";
+            ui.reportButton.clicked = false;
+
+            foreach (var b in ui.roomButtons) b.clicked = false;
+            foreach (var b in ui.typeButtons) b.clicked = false;
+            foreach (var b in ui.nextButtons) b.clicked = false;
+        }
+    }
+
+
 
 }

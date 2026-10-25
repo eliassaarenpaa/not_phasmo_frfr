@@ -1,9 +1,15 @@
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 using Cursor = UnityEngine.Cursor;
 
 public static class Game
 {
+    static bool isMenu = false;
+    static bool gameWon = false;
+    static bool gameLost = false;
+
+    static GameFlowSystem gameFlowSystem;
     static PlayerInputSystem playerInputSystem;
     static PlayerSystem playerSystem;
     static CameraSystem cameraSystem;
@@ -12,10 +18,13 @@ public static class Game
     static DoorSystem doorSystem;
     static InteractSystem interactSystem;
     static ClockSystem clockSystem;
+    static MenuSystem menuSystem;
+
 
     // Once before the first scene loads (before any Awake)
     public static void Init()
     {
+        gameFlowSystem = new GameFlowSystem();
         playerInputSystem = new PlayerInputSystem();
         playerSystem = new PlayerSystem();
         cameraSystem = new CameraSystem();
@@ -24,9 +33,9 @@ public static class Game
         doorSystem = new DoorSystem();
         interactSystem = new InteractSystem();
         clockSystem = new ClockSystem();
+        menuSystem = new MenuSystem();
 
         Debug.Log("init");
-        clockSystem.StartTimer();
     }
 
     // Once on quit / exiting play mode
@@ -37,86 +46,162 @@ public static class Game
 
     // On every frame after Update.ScriptRunBehaviourUpdate
 
-    public static void FrameUpdate(float dt)
+    public static void RestartGame()
     {
         if (!PlayerSystem.player || !CameraSystem.camera) return;
 
-        clockSystem.UpdateTimer(dt);
-        clockSystem.UpdateUI();
+        playerSystem.Reset();
+        clockSystem.Reset();
+        anomalySystem.Reset();
+        doorSystem.Reset();
+        gameWon = false;
+        gameLost = false;
+        GameFlowSystem.flow.exterior.gameObject.SetActive(true);
+        GameFlowSystem.flow.interior.gameObject.SetActive(false);
+        GameFlowSystem.flow.exterior.transform.position = new Vector3(0, 0, 0);
+    }
 
-        if (clockSystem.timer >= ClockSystem.totalGameDuration)
+    public static void FrameUpdate(float dt)
+    {
+        if (!GameFlowSystem.flow) return;
+
+        if (gameFlowSystem.UpdateState(menuSystem.IsPlay(), gameWon, gameLost))
         {
-            // WIN GAME????
-            return;
-        }
-
-        if (anomalySystem.active.Count >= AnomalySystem.maxUnreportedAnomalies)
-        {
-            // Lose game??
-        }
-
-        PlayerInput input = playerInputSystem.ReadInputs();
-
-        anomalySystem.UpdateReportUI(input);
-
-        // Only update anomalies after first time entered house
-        if (doorSystem.numTimesEnteredDoor > 0)
-        {
-            anomalySystem.UpdateAnomalyEventLoop(input, ClockSystem.totalGameDuration, dt);
-        }
-
-        LampSystem.SetLampActive(!AnomalySystem.trigger.isPlayerOnTrigger);
-
-        if (anomalySystem.isWaitingForResult)
-        {
-            input.moveX = 0;
-            input.moveZ = 0;
-            input.mouseDx = 0;
-            input.mouseDy = 0;
-
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-        }
-        else
-        {
-            Cursor.lockState = anomalySystem.isReporting ? CursorLockMode.None : CursorLockMode.Locked;
-            Cursor.visible = anomalySystem.isReporting;
-        }
-
-        if (anomalySystem.isReporting)
-        {
-
-            input.moveX = 0;
-            input.moveZ = 0;
-            input.mouseDx = 0;
-            input.mouseDy = 0;
-
-            Transform cam_target = AnomalySystem.ui.cameraPcLookat;
-            cameraSystem.LerpToTrasnform(cam_target, dt);
-        }
-        else
-        {
-            Transform cam_target = PlayerSystem.player.transform;
-            cameraSystem.FirstPersonFollowRotate(input, cam_target, dt);
-
-            playerSystem.UpdateFootstepSound(doorSystem.isPlayerOutside);
-
-            doorSystem.Update(input, dt);
-
-            if (doorSystem.isEnterDoor)
+            GameState newState = gameFlowSystem.state;
+            switch (newState)
             {
-                PlayerSystem.player.transform.SetPositionAndRotation(doorSystem.doorExitTransform.position, doorSystem.doorExitTransform.rotation);
-                cameraSystem.LookAt(doorSystem.doorExitTransform.forward);
+                case GameState.Menu:
+                    GameFlowSystem.flow.world.gameObject.SetActive(false);
+                    GameFlowSystem.flow.menu.gameObject.SetActive(true);
+                    menuSystem.SetScreen(MenuScreen.MainMenu);
+                    break;
+                case GameState.Playing:
+                    GameFlowSystem.flow.world.gameObject.SetActive(true);
+                    GameFlowSystem.flow.menu.gameObject.SetActive(false);
+                    RestartGame();
+                    break;
+                case GameState.Win:
+                    GameFlowSystem.flow.world.gameObject.SetActive(false);
+                    GameFlowSystem.flow.menu.gameObject.SetActive(true);
+                    menuSystem.SetScreen(MenuScreen.WinMenu);
+                    break;
+                case GameState.Lose:
+                    GameFlowSystem.flow.world.gameObject.SetActive(false);
+                    GameFlowSystem.flow.menu.gameObject.SetActive(true);
+                    menuSystem.SetScreen(MenuScreen.LoseMenu);
+                    break;
             }
         }
 
+        switch (gameFlowSystem.state)
+        {
+            case GameState.Menu:
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
+                break;
+            case GameState.Playing:
+                {
+                    if (!PlayerSystem.player || !CameraSystem.camera) return;
 
-        Vector3 fwd = CameraSystem.camera.transform.forward;
-        Vector3 right = CameraSystem.camera.transform.right;
 
-        playerSystem.Move(input, fwd, right, dt);
+                    if (clockSystem.timer >= ClockSystem.totalGameDuration)
+                    {
+                        if (!gameWon)
+                        {
+                            // WIN GAME????
+                            gameWon = true;
+                        }
 
-        interactSystem.Update(doorSystem.isPlayerOnDoorTrigger, AnomalySystem.trigger.isPlayerOnTrigger, anomalySystem.isReporting, anomalySystem.isWaitingForResult);
+                        return;
+                    }
+
+                    if (anomalySystem.active.Count >= AnomalySystem.maxUnreportedAnomalies)
+                    {
+                        // Lose game??
+                        if (!gameLost)
+                        {
+                            gameLost = true;
+                        }
+                    }
+
+                    PlayerInput input = playerInputSystem.ReadInputs();
+
+                    anomalySystem.UpdateReportUI(input);
+
+                    // Only begin timer when player has first entered the house
+                    if (doorSystem.isEnterDoor && doorSystem.numTimesEnteredDoor == 1)
+                    {
+
+                    }
+
+                    // Only update anomalies and timer after first time entered house
+                    if (doorSystem.numTimesEnteredDoor > 0)
+                    {
+                        clockSystem.UpdateTimer(dt);
+                        anomalySystem.UpdateAnomalyEventLoop(input, clockSystem.timer, ClockSystem.totalGameDuration, dt);
+                    }
+                    clockSystem.UpdateUI();
+
+
+                    LampSystem.SetLampActive(!AnomalySystem.trigger.isPlayerOnTrigger);
+
+                    if (anomalySystem.isWaitingForResult)
+                    {
+                        input.moveX = 0;
+                        input.moveZ = 0;
+                        input.mouseDx = 0;
+                        input.mouseDy = 0;
+
+                        Cursor.lockState = CursorLockMode.Locked;
+                        Cursor.visible = false;
+                    }
+                    else
+                    {
+                        Cursor.lockState = anomalySystem.isReporting ? CursorLockMode.None : CursorLockMode.Locked;
+                        Cursor.visible = anomalySystem.isReporting;
+                    }
+
+                    if (anomalySystem.isReporting)
+                    {
+
+                        input.moveX = 0;
+                        input.moveZ = 0;
+                        input.mouseDx = 0;
+                        input.mouseDy = 0;
+
+                        Transform cam_target = AnomalySystem.ui.cameraPcLookat;
+                        cameraSystem.LerpToTrasnform(cam_target, dt);
+                    }
+                    else
+                    {
+                        Transform cam_target = PlayerSystem.player.transform;
+                        cameraSystem.FirstPersonFollowRotate(input, cam_target, dt);
+
+                        playerSystem.UpdateFootstepSound(doorSystem.isPlayerOutside);
+
+                        doorSystem.Update(input, dt);
+
+                        if (doorSystem.isEnterDoor)
+                        {
+                            PlayerSystem.player.transform.SetPositionAndRotation(doorSystem.doorExitTransform.position, doorSystem.doorExitTransform.rotation);
+                            cameraSystem.LookAt(doorSystem.doorExitTransform.forward);
+                        }
+                    }
+
+
+                    Vector3 fwd = CameraSystem.camera.transform.forward;
+                    Vector3 right = CameraSystem.camera.transform.right;
+
+                    playerSystem.Move(input, fwd, right, dt);
+
+                    interactSystem.Update(doorSystem.isPlayerOnDoorTrigger, AnomalySystem.trigger.isPlayerOnTrigger, anomalySystem.isReporting, anomalySystem.isWaitingForResult);
+                }
+                break;
+            case GameState.Win:
+            case GameState.Lose:
+                break;
+        }
+
     }
 
     // On every physics step after FixedUpdate.ScriptRunBehaviourFixedUpdate

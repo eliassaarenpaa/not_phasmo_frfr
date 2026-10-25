@@ -3,6 +3,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    public Transform spawnTransform;
     public LayerMask groundMask;
     public List<AudioClip> footsteps_inside = new List<AudioClip>();
 
