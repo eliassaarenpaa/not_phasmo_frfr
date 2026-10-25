@@ -42,6 +42,12 @@ public class CameraSystem
             look);
     }
 
+    public void Zoom(PlayerInput input, float dt)
+    {
+        float fov_target = input.isZoom ? 30.0f : 60.0f;
+        camera.cam.fieldOfView = Mathf.Lerp(camera.cam.fieldOfView, fov_target, 10.0f * dt);
+    }
+
     public void LerpToTrasnform(Transform t, float dt)
     {
         Vector3 p = Vector3.Lerp(camera.transform.position, t.position, camera.transitionSpeedLinear * dt);

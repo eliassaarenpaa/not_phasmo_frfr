@@ -181,6 +181,7 @@ public static class Game
                     {
                         Transform cam_target = PlayerSystem.player.transform;
                         cameraSystem.FirstPersonFollowRotate(input, cam_target, dt);
+                        cameraSystem.Zoom(input, dt);
 
                         playerSystem.UpdateFootstepSound(doorSystem.isPlayerOutside);
 

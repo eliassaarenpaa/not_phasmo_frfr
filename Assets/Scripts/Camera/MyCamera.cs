@@ -2,6 +2,7 @@ using UnityEngine;
 
 public class MyCamera : MonoBehaviour
 {
+    public UnityEngine.Camera cam;
     public Vector3 offset;
     public float sensitivity = 2f; // degrees per mouse unit
     public float minPitch = -85f;

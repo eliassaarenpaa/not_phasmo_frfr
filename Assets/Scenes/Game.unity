@@ -2073,6 +2073,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9dd1472f662a9fb4a934c30f71c81d01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cam: {fileID: 0}
   offset: {x: 0, y: 0.4, z: 0}
   sensitivity: 0.5
   minPitch: -85
@@ -28623,6 +28624,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9dd1472f662a9fb4a934c30f71c81d01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cam: {fileID: 1130161001}
   offset: {x: 0, y: 0.4, z: 0}
   sensitivity: 0.5
   minPitch: -85

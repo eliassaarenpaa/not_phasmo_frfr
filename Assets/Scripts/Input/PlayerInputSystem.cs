@@ -10,6 +10,7 @@ public struct PlayerInput
 
     public bool isInteract;
     public bool isBack;
+    public bool isZoom;
 }
 
 public class PlayerInputSystem
@@ -31,6 +32,8 @@ public class PlayerInputSystem
 
         input.isInteract = Input.GetMouseButtonDown(0);
         input.isBack = Input.GetMouseButtonDown(1);
+
+        input.isZoom = Input.GetMouseButton(1);
 
         return input;
     }
