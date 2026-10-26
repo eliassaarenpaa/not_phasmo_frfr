@@ -15454,7 +15454,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_UiScaleMode: 0
   m_ReferencePixelsPerUnit: 100
-  m_ScaleFactor: 1
+  m_ScaleFactor: 0.5
   m_ReferenceResolution: {x: 800, y: 600}
   m_ScreenMatchMode: 0
   m_MatchWidthOrHeight: 0
@@ -39194,13 +39194,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1478075041}
-  m_LocalRotation: {x: -0.022237657, y: -0.62515926, z: 0.034206472, w: -0.7794301}
-  m_LocalPosition: {x: -47.15, y: 1.4, z: 35.97}
+  m_LocalRotation: {x: -0.023033509, y: -0.643261, z: 0.033675723, w: -0.76455915}
+  m_LocalPosition: {x: -46.653, y: 1.36, z: 36.08}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1769622866}
   m_RootOrder: 9
-  m_LocalEulerAnglesHint: {x: 4.441, y: -282.593, z: -1.4670001}
+  m_LocalEulerAnglesHint: {x: 4.505, y: -279.898, z: -1.2570001}
 --- !u!1001 &1483920545
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -55202,6 +55202,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1769622866}
     m_Modifications:
+    - target: {fileID: 3643084957015011138, guid: c0e9bb93c9625194d9d29817f0e9be6c,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 5712111107248350150, guid: c0e9bb93c9625194d9d29817f0e9be6c,
         type: 3}
       propertyPath: Loop
